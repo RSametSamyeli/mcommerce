@@ -4,7 +4,8 @@ import { getProducts } from '@/app/lib/api/products'
 import { ProductList } from '@/app/components/product/ProductList'
 import { ProductPagination } from '@/app/components/product/ProductPagination'
 import { ProductSort } from '@/app/components/product/ProductSort'
-import { ProductFilters } from '@/app/types'
+import { ProductFilters } from '@/app/components/product/ProductFilters'
+import { ProductFilters as ProductFiltersType } from '@/app/types'
 
 export const metadata: Metadata = {
   title: 'Ürünler',
@@ -27,11 +28,11 @@ interface ProductsPageProps {
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   // Parse search params
-  const filters: ProductFilters = {
+  const filters: ProductFiltersType = {
     page: searchParams.page ? parseInt(searchParams.page) : 1,
-    sortBy: searchParams.sortBy as ProductFilters['sortBy'],
+    sortBy: searchParams.sortBy as ProductFiltersType['sortBy'],
     search: searchParams.search,
-    categories: searchParams.category ? [searchParams.category] : undefined,
+    categories: searchParams.category ? searchParams.category.split(',') : undefined,
     minPrice: searchParams.minPrice ? parseFloat(searchParams.minPrice) : undefined,
     maxPrice: searchParams.maxPrice ? parseFloat(searchParams.maxPrice) : undefined,
     limit: 12,
@@ -50,23 +51,29 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
         )}
       </div>
 
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-        <p className="text-sm text-muted-foreground">
-          {productData.total} ürün bulundu
-        </p>
-        <ProductSort />
+      <div className="lg:flex lg:gap-8">
+        <ProductFilters />
+
+        <div className="lg:flex-1">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+            <p className="text-sm text-muted-foreground">
+              {productData.total} ürün bulundu
+            </p>
+            <ProductSort />
+          </div>
+
+          <Suspense fallback={<ProductList products={[]} loading={true} />}>
+            <ProductList products={productData.products} />
+          </Suspense>
+
+          <ProductPagination
+            currentPage={productData.page}
+            totalPages={productData.totalPages}
+            hasNextPage={productData.hasNextPage}
+            hasPrevPage={productData.hasPrevPage}
+          />
+        </div>
       </div>
-
-      <Suspense fallback={<ProductList products={[]} loading={true} />}>
-        <ProductList products={productData.products} />
-      </Suspense>
-
-      <ProductPagination
-        currentPage={productData.page}
-        totalPages={productData.totalPages}
-        hasNextPage={productData.hasNextPage}
-        hasPrevPage={productData.hasPrevPage}
-      />
     </div>
   )
 }
