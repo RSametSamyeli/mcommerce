@@ -30,7 +30,7 @@ const ProductCardComponent = ({ product }: ProductCardProps) => {
     }).format(price)
   }
 
-  const handleAddToCart = async (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent | React.KeyboardEvent) => {
     e.preventDefault()
     e.stopPropagation()
     
@@ -44,6 +44,12 @@ const ProductCardComponent = ({ product }: ProductCardProps) => {
     } catch (error) {
       console.error('Error adding to cart:', error)
       setIsAdding(false)
+    }
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      handleAddToCart(e)
     }
   }
 
@@ -79,9 +85,9 @@ const ProductCardComponent = ({ product }: ProductCardProps) => {
       <CardContent className="p-4">
         <Link href={`/products/${product.slug}`}>
           <p className="text-sm text-muted-foreground mb-1">{product.categoryInfo.name}</p>
-          <h3 className="font-semibold line-clamp-2 hover:text-primary transition-colors">
+          <h2 className="font-semibold line-clamp-2 hover:text-primary transition-colors">
             {product.title}
-          </h3>
+          </h2>
           
           <div className="flex items-center gap-1 mt-2">
             <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
@@ -104,6 +110,7 @@ const ProductCardComponent = ({ product }: ProductCardProps) => {
           size="icon"
           variant={inCart ? "default" : "outline"}
           onClick={handleAddToCart}
+          onKeyDown={handleKeyDown}
           disabled={product.stock === 0 || isAdding}
           className="hover:bg-primary hover:text-primary-foreground transition-colors"
           title={inCart ? `Sepette (${cartItem?.quantity || 0} adet)` : 'Sepete Ekle'}

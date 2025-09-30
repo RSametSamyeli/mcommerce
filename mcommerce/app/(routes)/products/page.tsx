@@ -112,21 +112,23 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <div className="mb-8">
+      <header className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <h1 className="text-3xl font-bold">Ürünler</h1>
         </div>
         {filters.search && (
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground" role="status" aria-live="polite">
             &quot;{filters.search}&quot; için arama sonuçları ({productData.total} ürün)
           </p>
         )}
-      </div>
+      </header>
 
       <div className="lg:flex lg:gap-8">
-        <ProductFilters />
+        <aside className="lg:w-64 mb-6 lg:mb-0" role="complementary" aria-label="Ürün filtreleri">
+          <ProductFilters />
+        </aside>
 
-        <div className="lg:flex-1">
+        <section className="lg:flex-1" aria-label="Ürün listesi">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <p className="text-sm text-muted-foreground">
               {productData.total} ürün bulundu
@@ -140,13 +142,15 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             </Suspense>
           </ErrorBoundary>
 
-          <ProductPagination
-            currentPage={productData.page}
-            totalPages={productData.totalPages}
-            hasNextPage={productData.hasNextPage}
-            hasPrevPage={productData.hasPrevPage}
-          />
-        </div>
+          <nav aria-label="Sayfa navigasyonu">
+            <ProductPagination
+              currentPage={productData.page}
+              totalPages={productData.totalPages}
+              hasNextPage={productData.hasNextPage}
+              hasPrevPage={productData.hasPrevPage}
+            />
+          </nav>
+        </section>
       </div>
     </div>
   )

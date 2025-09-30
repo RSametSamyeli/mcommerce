@@ -41,6 +41,15 @@ export function CartDrawer({ children }: CartDrawerProps) {
             Sepetim ({totalItems} ürün)
           </SheetTitle>
         </SheetHeader>
+        
+        <div 
+          aria-live="polite" 
+          aria-atomic="true" 
+          className="sr-only"
+          role="status"
+        >
+          Sepette {totalItems} ürün, toplam {formatPrice(totalPriceInTRY)}
+        </div>
 
         <div className="flex flex-col h-full">
           {items.length === 0 ? (
