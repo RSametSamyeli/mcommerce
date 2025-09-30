@@ -1,5 +1,6 @@
 'use client'
 
+import { memo, useMemo } from 'react'
 import { Product } from '@/app/types'
 import { ProductCard } from './ProductCard'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -9,13 +10,25 @@ interface ProductListProps {
   loading?: boolean
 }
 
-export function ProductList({ products, loading }: ProductListProps) {
+const ProductListComponent = ({ products, loading }: ProductListProps) => {
+  const skeletonItems = useMemo(() => 
+    Array.from({ length: 12 }).map((_, index) => (
+      <ProductListSkeleton key={index} />
+    )), 
+    []
+  )
+
+  const productItems = useMemo(() => 
+    products.map((product) => (
+      <ProductCard key={product.id} product={product} />
+    )), 
+    [products]
+  )
+
   if (loading) {
     return (
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {Array.from({ length: 12 }).map((_, index) => (
-          <ProductListSkeleton key={index} />
-        ))}
+        {skeletonItems}
       </div>
     )
   }
@@ -33,14 +46,12 @@ export function ProductList({ products, loading }: ProductListProps) {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
+      {productItems}
     </div>
   )
 }
 
-function ProductListSkeleton() {
+const ProductListSkeleton = memo(() => {
   return (
     <div className="space-y-3">
       <Skeleton className="aspect-square w-full" />
@@ -52,4 +63,8 @@ function ProductListSkeleton() {
       </div>
     </div>
   )
-}
+})
+
+ProductListSkeleton.displayName = 'ProductListSkeleton'
+
+export const ProductList = memo(ProductListComponent)

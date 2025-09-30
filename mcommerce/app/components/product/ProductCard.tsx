@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, memo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { ShoppingCart, Star, Check } from 'lucide-react'
@@ -15,7 +15,7 @@ interface ProductCardProps {
   product: Product
 }
 
-export function ProductCard({ product }: ProductCardProps) {
+const ProductCardComponent = ({ product }: ProductCardProps) => {
   const { addItem, isInCart, getItem } = useCartStore()
   const [isAdding, setIsAdding] = useState(false)
   const isHydrated = useHydration()
@@ -55,7 +55,7 @@ export function ProductCard({ product }: ProductCardProps) {
             src={product.image}
             alt={product.title}
             fill
-            className="object-cover transition-transform group-hover:scale-105"
+            className="object-contain p-4 transition-transform group-hover:scale-105"
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           />
           {product.discount && (
@@ -118,3 +118,5 @@ export function ProductCard({ product }: ProductCardProps) {
     </Card>
   )
 }
+
+export const ProductCard = memo(ProductCardComponent)
