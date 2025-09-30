@@ -8,9 +8,77 @@ import { ProductFilters } from '@/app/components/product/ProductFilters'
 import { ProductFilters as ProductFiltersType } from '@/app/types'
 import { ErrorBoundary } from '@/app/components/ui/error-boundary'
 
-export const metadata: Metadata = {
-  title: 'Ürünler',
-  description: 'En yeni ürünleri keşfedin',
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}): Promise<Metadata> {
+  const params = await searchParams
+  const search = params.search as string
+  const category = params.categories as string
+  const page = params.page as string
+
+  let title = 'Ürünler - MCommerce'
+  let description = 'En yeni ve popüler ürünleri keşfedin. Kaliteli ürünler, uygun fiyatlar.'
+
+  if (search) {
+    title = `"${search}" için arama sonuçları - MCommerce`
+    description = `"${search}" araması için bulunan ürünler. En uygun fiyatlar ve hızlı teslimat.`
+  }
+
+  if (category) {
+    title = `${category} Kategorisi - MCommerce`
+    description = `${category} kategorisindeki en iyi ürünler. Kaliteli ${category} ürünleri keşfedin.`
+  }
+
+  if (page && parseInt(page) > 1) {
+    title += ` - Sayfa ${page}`
+  }
+
+  return {
+    title,
+    description,
+    keywords: [
+      'e-ticaret', 'online alışveriş', 'ürünler', 'mcommerce',
+      search, category
+    ].filter(Boolean),
+    openGraph: {
+      title,
+      description,
+      type: 'website',
+      locale: 'tr_TR',
+      url: '/products',
+      siteName: 'MCommerce',
+      images: [
+        {
+          url: '/og-products.jpg',
+          width: 1200,
+          height: 630,
+          alt: 'MCommerce Ürünler',
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: ['/og-products.jpg'],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
+    alternates: {
+      canonical: '/products',
+    },
+  }
 }
 
 // ISR - Revalidate every 60 seconds

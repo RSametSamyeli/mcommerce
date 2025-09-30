@@ -29,24 +29,68 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
   
   if (!product) {
     return {
-      title: 'Ürün Bulunamadı',
+      title: 'Ürün Bulunamadı - MCommerce',
+      description: 'Aradığınız ürün bulunamadı.',
     }
   }
 
+  const title = `${product.title} - MCommerce`
+  const description = `${product.description.slice(0, 160)}...`
+  const price = `${product.priceInTRY}₺`
+  const availability = product.stock > 0 ? 'InStock' : 'OutOfStock'
+
   return {
-    title: product.title,
-    description: product.description,
+    title,
+    description,
+    keywords: [
+      product.title,
+      product.category,
+      'online alışveriş',
+      'e-ticaret',
+      'mcommerce'
+    ],
     openGraph: {
-      title: product.title,
-      description: product.description,
+      title,
+      description,
+      type: 'product',
+      locale: 'tr_TR',
+      url: `/products/${slug}`,
+      siteName: 'MCommerce',
       images: [
         {
           url: product.image,
-          width: 800,
-          height: 800,
+          width: 1200,
+          height: 630,
           alt: product.title,
         },
       ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [product.image],
+    },
+    robots: {
+      index: true,
+      follow: true,
+      googleBot: {
+        index: true,
+        follow: true,
+        'max-video-preview': -1,
+        'max-image-preview': 'large',
+        'max-snippet': -1,
+      },
+    },
+    alternates: {
+      canonical: `/products/${slug}`,
+    },
+    other: {
+      'product:price:amount': product.priceInTRY.toString(),
+      'product:price:currency': 'TRY',
+      'product:availability': availability,
+      'product:condition': 'new',
+      'product:category': product.category,
     },
   }
 }
