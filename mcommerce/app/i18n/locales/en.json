@@ -11,7 +11,6 @@
     "total": "Total",
     "quantity": "Quantity",
     "remove": "Remove",
-    "backToProducts": "Back to Products",
     "addToCart": "Add to Cart",
     "inStock": "In Stock",
     "outOfStock": "Out of Stock",
@@ -73,6 +72,25 @@
     "free": "Free",
     "freeShippingNote": "Free shipping on orders over $12",
     "proceedToCheckout": "Proceed to Checkout"
+  },
+  "errors": {
+    "somethingWentWrong": "Something Went Wrong",
+    "unexpectedError": "An unexpected error occurred. Please try refreshing the page.",
+    "tryAgain": "Try Again",
+    "refreshPage": "Refresh Page",
+    "errorDetails": "Error Details (Development Mode)",
+    "networkError": "Network error occurred. Please check your internet connection.",
+    "notFound": "Page Not Found",
+    "notFoundDescription": "The page you are looking for could not be found or may have been moved.",
+    "goHome": "Go Home",
+    "outOfStock": "Out of Stock",
+    "productNotFound": "Product Not Found",
+    "noResults": "No Results Found",
+    "noResultsDescription": "No products match your search criteria. Please check your filters.",
+    "clearFilters": "Clear Filters",
+    "addedToCart": "Added to Cart!",
+    "addToCartWithQuantity": "Add to Cart ({{quantity}} items)",
+    "featuredProduct": "Featured Product"
   },
   "footer": {
     "about": "About Us",

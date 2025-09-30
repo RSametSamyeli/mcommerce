@@ -276,6 +276,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
             product={product}
             stock={product.stock}
             isFeatured={product.isFeatured}
+            locale={locale}
           />
 
           <Card className="p-4">

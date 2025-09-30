@@ -42,10 +42,7 @@ const ProductListComponent = ({ products, locale, loading }: ProductListProps) =
       <div className="text-center py-12">
         <p className="text-lg text-muted-foreground">{t.products.noResults}</p>
         <p className="text-sm text-muted-foreground mt-2">
-          {locale === 'tr' 
-            ? 'Farklı filtreler deneyebilir veya arama kriterlerinizi değiştirebilirsiniz.'
-            : 'You can try different filters or change your search criteria.'
-          }
+          {t.errors.noResultsDescription}
         </p>
       </div>
     )

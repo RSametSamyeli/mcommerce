@@ -11,7 +11,6 @@
     "total": "Toplam",
     "quantity": "Adet",
     "remove": "Kaldır",
-    "backToProducts": "Geri Dön",
     "addToCart": "Sepete Ekle",
     "inStock": "Stokta",
     "outOfStock": "Stokta Yok",
@@ -73,6 +72,25 @@
     "free": "Ücretsiz",
     "freeShippingNote": "500₺ üzeri kargo ücretsiz",
     "proceedToCheckout": "Ödemeye Geç"
+  },
+  "errors": {
+    "somethingWentWrong": "Bir şeyler yanlış gitti",
+    "unexpectedError": "Beklenmeyen bir hata oluştu. Lütfen sayfayı yenilemeyi deneyin.",
+    "tryAgain": "Tekrar Dene",
+    "refreshPage": "Sayfayı Yenile",
+    "errorDetails": "Hata Detayları (Geliştirme Modu)",
+    "networkError": "Bağlantı hatası oluştu. Lütfen internet bağlantınızı kontrol edin.",
+    "notFound": "Sayfa Bulunamadı",
+    "notFoundDescription": "Aradığınız sayfa bulunamadı veya taşınmış olabilir.",
+    "goHome": "Ana Sayfaya Dön",
+    "outOfStock": "Stokta Yok",
+    "productNotFound": "Ürün Bulunamadı",
+    "noResults": "Sonuç bulunamadı",
+    "noResultsDescription": "Arama kriterlerinizle eşleşen ürün bulunamadı. Filtrelerinizi kontrol edin.",
+    "clearFilters": "Filtreleri Temizle",
+    "addedToCart": "Sepete Eklendi!",
+    "addToCartWithQuantity": "Sepete Ekle ({{quantity}} adet)",
+    "featuredProduct": "Öne Çıkan Ürün"
   },
   "footer": {
     "about": "Hakkımızda",

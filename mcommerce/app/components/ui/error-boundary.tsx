@@ -4,10 +4,13 @@ import React, { ErrorInfo, ReactNode } from 'react'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { useParams } from 'next/navigation'
+import { Locale, getTranslations } from '@/app/i18n'
 
 interface Props {
   children: ReactNode
   fallback?: ReactNode
+  locale?: Locale
 }
 
 interface State {
@@ -39,44 +42,52 @@ export class ErrorBoundary extends React.Component<Props, State> {
         return this.props.fallback
       }
 
-      return (
-        <Card className="p-8 text-center max-w-md mx-auto">
-          <div className="flex flex-col items-center space-y-4">
-            <AlertTriangle className="h-12 w-12 text-red-500" />
-            <div className="space-y-2">
-              <h2 className="text-xl font-semibold">Bir şeyler yanlış gitti</h2>
-              <p className="text-muted-foreground">
-                Beklenmeyen bir hata oluştu. Lütfen sayfayı yenilemeyi deneyin.
-              </p>
-              {process.env.NODE_ENV === 'development' && this.state.error && (
-                <details className="mt-4 p-3 bg-gray-100 rounded text-left text-sm">
-                  <summary className="cursor-pointer font-medium">
-                    Hata Detayları (Geliştirme Modu)
-                  </summary>
-                  <pre className="mt-2 whitespace-pre-wrap">
-                    {this.state.error.message}
-                    {'\n'}
-                    {this.state.error.stack}
-                  </pre>
-                </details>
-              )}
-            </div>
-            <div className="flex gap-2">
-              <Button onClick={this.handleReset} variant="outline">
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Tekrar Dene
-              </Button>
-              <Button onClick={() => window.location.reload()}>
-                Sayfayı Yenile
-              </Button>
-            </div>
-          </div>
-        </Card>
-      )
+      return <ErrorFallback error={this.state.error} onReset={this.handleReset} locale={this.props.locale} />
     }
 
     return this.props.children
   }
+}
+
+function ErrorFallback({ error, onReset, locale }: { error?: Error; onReset: () => void; locale?: Locale }) {
+  const params = useParams()
+  const currentLocale = locale || (params?.locale as Locale) || 'en'
+  const t = getTranslations(currentLocale)
+
+  return (
+    <Card className="p-8 text-center max-w-md mx-auto">
+      <div className="flex flex-col items-center space-y-4">
+        <AlertTriangle className="h-12 w-12 text-red-500" />
+        <div className="space-y-2">
+          <h2 className="text-xl font-semibold">{t.errors.somethingWentWrong}</h2>
+          <p className="text-muted-foreground">
+            {t.errors.unexpectedError}
+          </p>
+          {process.env.NODE_ENV === 'development' && error && (
+            <details className="mt-4 p-3 bg-gray-100 rounded text-left text-sm">
+              <summary className="cursor-pointer font-medium">
+                {t.errors.errorDetails}
+              </summary>
+              <pre className="mt-2 whitespace-pre-wrap">
+                {error.message}
+                {'\n'}
+                {error.stack}
+              </pre>
+            </details>
+          )}
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={onReset} variant="outline">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            {t.errors.tryAgain}
+          </Button>
+          <Button onClick={() => window.location.reload()}>
+            {t.errors.refreshPage}
+          </Button>
+        </div>
+      </div>
+    </Card>
+  )
 }
 
 export function useErrorBoundary() {

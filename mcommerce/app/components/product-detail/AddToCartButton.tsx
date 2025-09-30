@@ -6,17 +6,20 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useCartStore } from '@/app/store/cart'
 import { Product } from '@/app/types'
+import { Locale, getTranslations } from '@/app/i18n'
 
 interface AddToCartButtonProps {
   product: Product
   stock: number
   isFeatured?: boolean
+  locale: Locale
 }
 
-export function AddToCartButton({ product, stock, isFeatured }: AddToCartButtonProps) {
+export function AddToCartButton({ product, stock, isFeatured, locale }: AddToCartButtonProps) {
   const { addItem, updateQuantity, getItem, isInCart } = useCartStore()
   const [isAdding, setIsAdding] = useState(false)
   const [quantity, setQuantity] = useState(1)
+  const t = getTranslations(locale)
 
   const cartItem = getItem(product.id)
   const inCart = isInCart(product.id)
@@ -88,19 +91,19 @@ export function AddToCartButton({ product, stock, isFeatured }: AddToCartButtonP
         {isAdding ? (
           <>
             <Check className="mr-2 h-5 w-5" />
-            Sepete Eklendi!
+            {t.errors.addedToCart}
           </>
         ) : (
           <>
             <ShoppingCart className="mr-2 h-5 w-5" />
-            {inCart ? `Sepete Ekle (${cartItem?.quantity || 0} adet)` : 'Sepete Ekle'}
+            {inCart ? t.errors.addToCartWithQuantity.replace('{{quantity}}', (cartItem?.quantity || 0).toString()) : t.common.addToCart}
           </>
         )}
       </Button>
       
       {isFeatured && (
         <Badge variant="outline" className="w-full justify-center py-2">
-          Öne Çıkan Ürün
+          {t.errors.featuredProduct}
         </Badge>
       )}
     </div>
