@@ -1,31 +1,101 @@
 'use client'
 
-import { ShoppingCart } from 'lucide-react'
+import { useState } from 'react'
+import { ShoppingCart, Check, Minus, Plus } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { useCartStore } from '@/app/store/cart'
+import { Product } from '@/app/types'
 
 interface AddToCartButtonProps {
-  productId: number
+  product: Product
   stock: number
   isFeatured?: boolean
 }
 
-export function AddToCartButton({ productId, stock, isFeatured }: AddToCartButtonProps) {
-  const handleAddToCart = () => {
-    // TODO: zustand'a bagla
-    console.log('Add to cart:', productId)
+export function AddToCartButton({ product, stock, isFeatured }: AddToCartButtonProps) {
+  const { addItem, updateQuantity, getItem, isInCart } = useCartStore()
+  const [isAdding, setIsAdding] = useState(false)
+  const [quantity, setQuantity] = useState(1)
+
+  const cartItem = getItem(product.id)
+  const inCart = isInCart(product.id)
+
+  const handleAddToCart = async () => {
+    setIsAdding(true)
+    
+    try {
+      if (inCart && cartItem) {
+        updateQuantity(product.id, cartItem.quantity + quantity)
+      } else {
+        addItem(product, quantity)
+      }
+      setTimeout(() => setIsAdding(false), 1000)
+    } catch (error) {
+      console.error('Error adding to cart:', error)
+      setIsAdding(false)
+    }
+  }
+
+  const incrementQuantity = () => {
+    if (quantity < stock) {
+      setQuantity(prev => prev + 1)
+    }
+  }
+
+  const decrementQuantity = () => {
+    if (quantity > 1) {
+      setQuantity(prev => prev - 1)
+    }
   }
 
   return (
     <div className="space-y-4">
+      {stock > 0 && (
+        <div className="flex items-center justify-center gap-3 p-2 border rounded-lg">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={decrementQuantity}
+            disabled={quantity <= 1}
+            className="h-8 w-8"
+          >
+            <Minus className="h-4 w-4" />
+          </Button>
+          
+          <span className="font-medium min-w-[2rem] text-center">
+            {quantity}
+          </span>
+          
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={incrementQuantity}
+            disabled={quantity >= stock}
+            className="h-8 w-8"
+          >
+            <Plus className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
+
       <Button
         size="lg"
         className="w-full"
-        disabled={stock === 0}
+        disabled={stock === 0 || isAdding}
         onClick={handleAddToCart}
       >
-        <ShoppingCart className="mr-2 h-5 w-5" />
-        Sepete Ekle
+        {isAdding ? (
+          <>
+            <Check className="mr-2 h-5 w-5" />
+            Sepete Eklendi!
+          </>
+        ) : (
+          <>
+            <ShoppingCart className="mr-2 h-5 w-5" />
+            {inCart ? `Sepete Ekle (${cartItem?.quantity || 0} adet)` : 'Sepete Ekle'}
+          </>
+        )}
       </Button>
       
       {isFeatured && (

@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Image from 'next/image'
 import { ZoomIn, X } from 'lucide-react'
-import { Dialog, DialogContent, DialogTrigger } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTrigger, DialogTitle } from '@/components/ui/dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 
@@ -53,6 +53,7 @@ export function ImageGallery({ image, title, discount, isNew }: ImageGalleryProp
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-4xl">
+            <DialogTitle className="sr-only">{title} - Büyük Görünüm</DialogTitle>
             <div className="relative w-full h-[70vh]">
               <Image
                 src={image}

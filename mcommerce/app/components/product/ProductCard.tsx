@@ -1,16 +1,28 @@
+'use client'
+
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ShoppingCart, Star } from 'lucide-react'
+import { ShoppingCart, Star, Check } from 'lucide-react'
 import { Product } from '@/app/types'
 import { Card, CardContent, CardFooter } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { useCartStore } from '@/app/store/cart'
+import { useHydration } from '@/app/hooks/useHydration'
 
 interface ProductCardProps {
   product: Product
 }
 
 export function ProductCard({ product }: ProductCardProps) {
+  const { addItem, isInCart, getItem } = useCartStore()
+  const [isAdding, setIsAdding] = useState(false)
+  const isHydrated = useHydration()
+  
+  const inCart = isHydrated ? isInCart(product.id) : false
+  const cartItem = isHydrated ? getItem(product.id) : undefined
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('tr-TR', {
       style: 'currency',
@@ -18,10 +30,21 @@ export function ProductCard({ product }: ProductCardProps) {
     }).format(price)
   }
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault()
-    // TODO: add to cart fonksiyonunu implemente et
-    console.log('Add to cart:', product.id)
+    e.stopPropagation()
+    
+    if (product.stock === 0) return
+    
+    setIsAdding(true)
+    
+    try {
+      addItem(product, 1)
+      setTimeout(() => setIsAdding(false), 1000)
+    } catch (error) {
+      console.error('Error adding to cart:', error)
+      setIsAdding(false)
+    }
   }
 
   return (
@@ -79,12 +102,17 @@ export function ProductCard({ product }: ProductCardProps) {
         </div>
         <Button
           size="icon"
-          variant="outline"
+          variant={inCart ? "default" : "outline"}
           onClick={handleAddToCart}
-          disabled={product.stock === 0}
-          className="hover:bg-primary hover:text-primary-foreground"
+          disabled={product.stock === 0 || isAdding}
+          className="hover:bg-primary hover:text-primary-foreground transition-colors"
+          title={inCart ? `Sepette (${cartItem?.quantity || 0} adet)` : 'Sepete Ekle'}
         >
-          <ShoppingCart className="h-4 w-4" />
+          {isAdding ? (
+            <Check className="h-4 w-4" />
+          ) : (
+            <ShoppingCart className="h-4 w-4" />
+          )}
         </Button>
       </CardFooter>
     </Card>

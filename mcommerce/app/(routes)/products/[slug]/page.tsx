@@ -1,6 +1,5 @@
 import { notFound } from 'next/navigation'
 import { Metadata } from 'next'
-import Link from 'next/link'
 import { AlertCircle, Package } from 'lucide-react'
 import { getProductBySlug, getProducts } from '@/app/lib/api/products'
 import { Card } from '@/components/ui/card'
@@ -179,7 +178,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           </div>
 
           <AddToCartButton 
-            productId={product.id}
+            product={product}
             stock={product.stock}
             isFeatured={product.isFeatured}
           />

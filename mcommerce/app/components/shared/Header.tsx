@@ -14,14 +14,18 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { useRouter } from 'next/navigation'
+import { useCartStore } from '@/app/store/cart'
+import { CartDrawer } from '../cart/CartDrawer'
+import { useHydration } from '@/app/hooks/useHydration'
 
 export function Header() {
   const [searchQuery, setSearchQuery] = useState('')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const router = useRouter()
+  const { totalItems } = useCartStore()
+  const isHydrated = useHydration()
   
-  // TODO: Sepeti store'a bagla
-  const cartItemCount = 0
+  const displayTotalItems = isHydrated ? totalItems : 0
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -80,22 +84,23 @@ export function Header() {
           </form>
 
           <div className="flex items-center space-x-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="relative"
-              onClick={() => router.push('/cart')}
-            >
-              <ShoppingCart className="h-5 w-5" />
-              {cartItemCount > 0 && (
-                <Badge
-                  variant="destructive"
-                  className="absolute -right-1 -top-1 h-5 w-5 p-0 flex items-center justify-center text-xs"
-                >
-                  {cartItemCount}
-                </Badge>
-              )}
-            </Button>
+            <CartDrawer>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="relative"
+              >
+                <ShoppingCart className="h-5 w-5" />
+                {displayTotalItems > 0 && (
+                  <Badge
+                    variant="destructive"
+                    className="absolute -right-1 -top-1 h-5 w-5 p-0 flex items-center justify-center text-xs"
+                  >
+                    {displayTotalItems}
+                  </Badge>
+                )}
+              </Button>
+            </CartDrawer>
 
             {/* Mobile Menu */}
             <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
