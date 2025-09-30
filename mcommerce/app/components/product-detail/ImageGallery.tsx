@@ -48,6 +48,7 @@ export function ImageGallery({ image, title, discount, isNew }: ImageGalleryProp
               variant="secondary"
               size="icon"
               className="absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity"
+              aria-label={`${title} görselini büyüt`}
             >
               <ZoomIn className="h-4 w-4" />
             </Button>
@@ -67,6 +68,7 @@ export function ImageGallery({ image, title, discount, isNew }: ImageGalleryProp
                 size="icon"
                 className="absolute top-4 right-4"
                 onClick={() => setIsZoomed(false)}
+                aria-label="Büyük görünümü kapat"
               >
                 <X className="h-4 w-4" />
               </Button>

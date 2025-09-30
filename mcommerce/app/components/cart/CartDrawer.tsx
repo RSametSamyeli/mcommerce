@@ -94,10 +94,11 @@ export function CartDrawer({ children }: CartDrawerProps) {
                             size="icon"
                             className="h-8 w-8"
                             onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                            aria-label={`${item.product.title} miktarını azalt`}
                           >
                             <Minus className="h-3 w-3" />
                           </Button>
-                          <span className="px-2 text-sm font-medium">
+                          <span className="px-2 text-sm font-medium" aria-label={`Miktar: ${item.quantity}`}>
                             {item.quantity}
                           </span>
                           <Button
@@ -105,6 +106,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                             size="icon"
                             className="h-8 w-8"
                             onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                            aria-label={`${item.product.title} miktarını artır`}
                           >
                             <Plus className="h-3 w-3" />
                           </Button>
@@ -115,6 +117,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                           size="icon"
                           className="h-8 w-8 text-muted-foreground hover:text-destructive"
                           onClick={() => removeItem(item.product.id)}
+                          aria-label={`${item.product.title} ürünü sepetten kaldır`}
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
@@ -130,6 +133,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                   size="sm"
                   onClick={clearCart}
                   className="w-full"
+                  aria-label="Sepetteki tüm ürünleri temizle"
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
                   Sepeti Temizle

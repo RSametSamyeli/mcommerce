@@ -107,6 +107,13 @@ const ProductCardComponent = ({ product }: ProductCardProps) => {
           disabled={product.stock === 0 || isAdding}
           className="hover:bg-primary hover:text-primary-foreground transition-colors"
           title={inCart ? `Sepette (${cartItem?.quantity || 0} adet)` : 'Sepete Ekle'}
+          aria-label={
+            product.stock === 0 
+              ? `${product.title} stokta yok` 
+              : inCart 
+                ? `${product.title} sepette, ${cartItem?.quantity || 0} adet`
+                : `${product.title} ürününü sepete ekle`
+          }
         >
           {isAdding ? (
             <Check className="h-4 w-4" />
