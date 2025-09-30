@@ -36,7 +36,6 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
   const title = `${product.title} - MCommerce`
   const description = `${product.description.slice(0, 160)}...`
-  const price = `${product.priceInTRY}₺`
   const availability = product.stock > 0 ? 'InStock' : 'OutOfStock'
 
   return {
@@ -52,7 +51,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
     openGraph: {
       title,
       description,
-      type: 'product',
+      type: 'website',
       locale: 'tr_TR',
       url: `/products/${slug}`,
       siteName: 'MCommerce',
@@ -123,6 +122,40 @@ export default async function ProductPage({ params }: ProductPageProps) {
   }
 
   const currentUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/products/${product.slug}`
+
+  const productJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Product',
+    name: product.title,
+    description: product.description,
+    image: product.image,
+    url: currentUrl,
+    sku: product.slug,
+    brand: {
+      '@type': 'Brand',
+      name: 'MCommerce',
+    },
+    category: product.category,
+    offers: {
+      '@type': 'Offer',
+      url: currentUrl,
+      priceCurrency: 'TRY',
+      price: product.priceInTRY,
+      availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+      condition: 'https://schema.org/NewCondition',
+      seller: {
+        '@type': 'Organization',
+        name: 'MCommerce',
+      },
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: product.rating.rate,
+      reviewCount: product.rating.count,
+      bestRating: 5,
+      worstRating: 1,
+    },
+  }
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -258,6 +291,13 @@ export default async function ProductPage({ params }: ProductPageProps) {
           categorySlug={product.categoryInfo.slug} 
         />
       </div>
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(productJsonLd),
+        }}
+      />
     </div>
   )
 }
