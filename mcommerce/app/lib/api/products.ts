@@ -10,8 +10,20 @@ const categoryMapping: Record<string, { slug: string; id: string; translationKey
   "women's clothing": { slug: 'womens-clothing', id: '4', translationKey: 'womensClothing' },
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function enhanceProduct(apiProduct: any, locale: Locale = 'en'): Product {
+interface ApiProduct {
+  id: number
+  title: string
+  price: number
+  description: string
+  category: string
+  image: string
+  rating: {
+    rate: number
+    count: number
+  }
+}
+
+function enhanceProduct(apiProduct: ApiProduct, locale: Locale = 'en'): Product {
   const t = getTranslations(locale)
   const categoryConfig = categoryMapping[apiProduct.category]
   const categoryInfo = categoryConfig ? {
@@ -62,7 +74,7 @@ async function fetchProducts(locale: Locale = 'en'): Promise<Product[]> {
       throw new Error('Failed to fetch products')
     }
     const apiProducts = await response.json()
-    return apiProducts.map((product: any) => enhanceProduct(product, locale))
+    return apiProducts.map((product: ApiProduct) => enhanceProduct(product, locale))
   } catch (error) {
     console.error('Error fetching products:', error)
     return []

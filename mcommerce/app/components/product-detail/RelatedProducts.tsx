@@ -41,7 +41,7 @@ export function RelatedProducts({ currentProductId, categorySlug, locale }: Rela
     }
 
     fetchRelatedProducts()
-  }, [currentProductId, categorySlug])
+  }, [currentProductId, categorySlug, locale])
 
   if (loading) {
     return (
