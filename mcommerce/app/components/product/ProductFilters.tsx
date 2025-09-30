@@ -25,7 +25,7 @@ const UncontrolledSlider = memo(({
   onValueCommit: (value: number[]) => void 
 }) => {
   const [value, setValue] = useState(defaultValue)
-  const timeoutRef = useRef<NodeJS.Timeout>()
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const handleChange = (newValue: number[]) => {
     setValue(newValue)
@@ -75,7 +75,7 @@ export function ProductFilters() {
   const [isOpen, setIsOpen] = useState(false)
   
   const searchInputRef = useRef<HTMLInputElement>(null)
-  const searchTimeoutRef = useRef<NodeJS.Timeout>()
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const selectedCategories = searchParams.get('category')?.split(',') || []
   const currentMinPrice = Number(searchParams.get('minPrice')) || 0

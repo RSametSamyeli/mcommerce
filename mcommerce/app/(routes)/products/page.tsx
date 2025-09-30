@@ -6,6 +6,7 @@ import { ProductPagination } from '@/app/components/product/ProductPagination'
 import { ProductSort } from '@/app/components/product/ProductSort'
 import { ProductFilters } from '@/app/components/product/ProductFilters'
 import { ProductFilters as ProductFiltersType } from '@/app/types'
+import { ErrorBoundary } from '@/app/components/ui/error-boundary'
 
 export const metadata: Metadata = {
   title: 'Ürünler',
@@ -16,25 +17,26 @@ export const metadata: Metadata = {
 export const revalidate = 60
 
 interface ProductsPageProps {
-  searchParams: {
+  searchParams: Promise<{
     page?: string
     sortBy?: string
     search?: string
     category?: string
     minPrice?: string
     maxPrice?: string
-  }
+  }>
 }
 
 export default async function ProductsPage({ searchParams }: ProductsPageProps) {
   // Parse search params
+  const params = await searchParams
   const filters: ProductFiltersType = {
-    page: searchParams.page ? parseInt(searchParams.page) : 1,
-    sortBy: searchParams.sortBy as ProductFiltersType['sortBy'],
-    search: searchParams.search,
-    categories: searchParams.category ? searchParams.category.split(',') : undefined,
-    minPrice: searchParams.minPrice ? parseFloat(searchParams.minPrice) : undefined,
-    maxPrice: searchParams.maxPrice ? parseFloat(searchParams.maxPrice) : undefined,
+    page: params.page ? parseInt(params.page) : 1,
+    sortBy: params.sortBy as ProductFiltersType['sortBy'],
+    search: params.search,
+    categories: params.category ? params.category.split(',') : undefined,
+    minPrice: params.minPrice ? parseFloat(params.minPrice) : undefined,
+    maxPrice: params.maxPrice ? parseFloat(params.maxPrice) : undefined,
     limit: 12,
   }
 
@@ -43,7 +45,9 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-4">Ürünler</h1>
+        <div className="flex items-center justify-between mb-4">
+          <h1 className="text-3xl font-bold">Ürünler</h1>
+        </div>
         {filters.search && (
           <p className="text-muted-foreground">
             &quot;{filters.search}&quot; için arama sonuçları ({productData.total} ürün)
@@ -62,9 +66,11 @@ export default async function ProductsPage({ searchParams }: ProductsPageProps) 
             <ProductSort />
           </div>
 
-          <Suspense fallback={<ProductList products={[]} loading={true} />}>
-            <ProductList products={productData.products} />
-          </Suspense>
+          <ErrorBoundary>
+            <Suspense fallback={<ProductList products={[]} loading={true} />}>
+              <ProductList products={productData.products} />
+            </Suspense>
+          </ErrorBoundary>
 
           <ProductPagination
             currentPage={productData.page}

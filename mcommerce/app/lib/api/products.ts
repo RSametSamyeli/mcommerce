@@ -9,6 +9,7 @@ const categoryMapping: Record<string, { name: string; slug: string; id: string }
   "women's clothing": { name: 'Kadın Giyim', slug: 'kadin-giyim', id: '4' },
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function enhanceProduct(apiProduct: any): Product {
   const categoryInfo = categoryMapping[apiProduct.category] || {
     name: apiProduct.category,

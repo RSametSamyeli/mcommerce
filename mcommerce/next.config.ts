@@ -1,4 +1,9 @@
 import type { NextConfig } from "next";
+import withBundleAnalyzer from '@next/bundle-analyzer'
+
+const bundleAnalyzer = withBundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+})
 
 const nextConfig: NextConfig = {
   images: {
@@ -11,6 +16,9 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-};
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
+  },
+}
 
-export default nextConfig;
+export default bundleAnalyzer(nextConfig)

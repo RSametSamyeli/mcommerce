@@ -15,15 +15,17 @@ import { ImageGallery } from '@/app/components/product-detail/ImageGallery'
 import { RelatedProducts } from '@/app/components/product-detail/RelatedProducts'
 import { ShareButtons } from '@/app/components/product-detail/ShareButtons'
 import { AddToCartButton } from '@/app/components/product-detail/AddToCartButton'
+import { Product } from '@/app/types/product'
 
 interface ProductPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const product = await getProductBySlug(params.slug)
+  const { slug } = await params
+  const product = await getProductBySlug(slug)
   
   if (!product) {
     return {
@@ -53,7 +55,7 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 export async function generateStaticParams() {
   const { products } = await getProducts({ limit: 100 })
   
-  return products.map((product) => ({
+  return products.map((product: Product) => ({
     slug: product.slug,
   }))
 }
@@ -62,7 +64,8 @@ export async function generateStaticParams() {
 export const revalidate = 60
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const product = await getProductBySlug(params.slug)
+  const { slug } = await params
+  const product = await getProductBySlug(slug)
 
   if (!product) {
     notFound()

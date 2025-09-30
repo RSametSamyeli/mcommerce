@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
-import { CartStore, CartItem, Product } from '@/app/types'
+import { CartStore, CartItem } from '@/app/types/cart'
+import { Product } from '@/app/types/product'
 
 const useCartStore = create<CartStore>()(
   persist(
