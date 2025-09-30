@@ -10,25 +10,24 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { useCartStore } from '@/app/store/cart'
 import { useHydration } from '@/app/hooks/useHydration'
+import { Locale, getTranslations, formatCurrency } from '@/app/i18n'
 
 interface ProductCardProps {
   product: Product
+  locale: Locale
 }
 
-const ProductCardComponent = ({ product }: ProductCardProps) => {
+const ProductCardComponent = ({ product, locale }: ProductCardProps) => {
   const { addItem, isInCart, getItem } = useCartStore()
   const [isAdding, setIsAdding] = useState(false)
   const isHydrated = useHydration()
+  const t = getTranslations(locale)
   
   const inCart = isHydrated ? isInCart(product.id) : false
   const cartItem = isHydrated ? getItem(product.id) : undefined
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY',
-    }).format(price)
-  }
+  const price = locale === 'en' ? product.price : product.priceInTRY
+  const originalPrice = locale === 'en' ? product.originalPrice : product.originalPriceInTRY
 
   const handleAddToCart = async (e: React.MouseEvent | React.KeyboardEvent) => {
     e.preventDefault()
@@ -55,7 +54,7 @@ const ProductCardComponent = ({ product }: ProductCardProps) => {
 
   return (
     <Card className="group h-full overflow-hidden transition-all hover:shadow-lg">
-      <Link href={`/products/${product.slug}`}>
+      <Link href={`/${locale}/products/${product.slug}`}>
         <div className="relative aspect-square overflow-hidden bg-gray-100">
           <Image
             src={product.image}
@@ -66,24 +65,24 @@ const ProductCardComponent = ({ product }: ProductCardProps) => {
           />
           {product.discount && (
             <Badge className="absolute left-2 top-2" variant="destructive">
-              {product.discount}% İndirim
+              {product.discount}% {t.productDetail.discount}
             </Badge>
           )}
           {product.isNew && (
             <Badge className="absolute right-2 top-2" variant="secondary">
-              Yeni
+              {t.productDetail.new}
             </Badge>
           )}
           {product.stock === 0 && (
             <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-              <span className="text-white font-semibold">Stokta Yok</span>
+              <span className="text-white font-semibold">{t.common.outOfStock}</span>
             </div>
           )}
         </div>
       </Link>
 
       <CardContent className="p-4">
-        <Link href={`/products/${product.slug}`}>
+        <Link href={`/${locale}/products/${product.slug}`}>
           <p className="text-sm text-muted-foreground mb-1">{product.categoryInfo.name}</p>
           <h2 className="font-semibold line-clamp-2 hover:text-primary transition-colors">
             {product.title}
@@ -99,10 +98,10 @@ const ProductCardComponent = ({ product }: ProductCardProps) => {
 
       <CardFooter className="p-4 pt-0 flex items-center justify-between">
         <div>
-          <p className="text-xl font-bold">{formatPrice(product.priceInTRY)}</p>
-          {product.originalPriceInTRY && (
+          <p className="text-xl font-bold">{formatCurrency(price, locale)}</p>
+          {originalPrice && (
             <p className="text-sm text-muted-foreground line-through">
-              {formatPrice(product.originalPriceInTRY)}
+              {formatCurrency(originalPrice, locale)}
             </p>
           )}
         </div>
@@ -113,13 +112,13 @@ const ProductCardComponent = ({ product }: ProductCardProps) => {
           onKeyDown={handleKeyDown}
           disabled={product.stock === 0 || isAdding}
           className="hover:bg-primary hover:text-primary-foreground transition-colors"
-          title={inCart ? `Sepette (${cartItem?.quantity || 0} adet)` : 'Sepete Ekle'}
+          title={inCart ? `${t.cart.title} (${cartItem?.quantity || 0} ${t.productDetail.pieces})` : t.common.addToCart}
           aria-label={
             product.stock === 0 
-              ? `${product.title} stokta yok` 
+              ? `${product.title} ${t.common.outOfStock}` 
               : inCart 
-                ? `${product.title} sepette, ${cartItem?.quantity || 0} adet`
-                : `${product.title} ürününü sepete ekle`
+                ? `${product.title} ${t.cart.title}, ${cartItem?.quantity || 0} ${t.productDetail.pieces}`
+                : `${product.title} ${t.common.addToCart}`
           }
         >
           {isAdding ? (

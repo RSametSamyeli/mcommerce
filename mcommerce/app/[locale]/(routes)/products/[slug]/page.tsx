@@ -15,28 +15,32 @@ import { ImageGallery } from '@/app/components/product-detail/ImageGallery'
 import { RelatedProducts } from '@/app/components/product-detail/RelatedProducts'
 import { ShareButtons } from '@/app/components/product-detail/ShareButtons'
 import { AddToCartButton } from '@/app/components/product-detail/AddToCartButton'
-import { Product } from '@/app/types/product'
+import { Locale, getTranslations, formatCurrency, formatDate } from '@/app/i18n'
 
 interface ProductPageProps {
   params: Promise<{
+    locale: Locale
     slug: string
   }>
 }
 
 export async function generateMetadata({ params }: ProductPageProps): Promise<Metadata> {
-  const { slug } = await params
-  const product = await getProductBySlug(slug)
+  const { locale, slug } = await params
+  const product = await getProductBySlug(slug, locale)
+  const t = getTranslations(locale)
   
   if (!product) {
     return {
-      title: 'Ürün Bulunamadı - MCommerce',
-      description: 'Aradığınız ürün bulunamadı.',
+      title: `${t.productDetail.notFound} - MCommerce`,
+      description: t.productDetail.notFoundDescription,
     }
   }
 
   const title = `${product.title} - MCommerce`
   const description = `${product.description.slice(0, 160)}...`
   const availability = product.stock > 0 ? 'InStock' : 'OutOfStock'
+  const currency = locale === 'en' ? 'USD' : 'TRY'
+  const price = locale === 'en' ? product.price : product.priceInTRY
 
   return {
     title,
@@ -52,8 +56,8 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       title,
       description,
       type: 'website',
-      locale: 'tr_TR',
-      url: `/products/${slug}`,
+      locale: locale === 'tr' ? 'tr_TR' : 'en_US',
+      url: `/${locale}/products/${slug}`,
       siteName: 'MCommerce',
       images: [
         {
@@ -82,11 +86,15 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
       },
     },
     alternates: {
-      canonical: `/products/${slug}`,
+      canonical: `/${locale}/products/${slug}`,
+      languages: {
+        'tr': `/tr/products/${slug}`,
+        'en': `/en/products/${slug}`,
+      },
     },
     other: {
-      'product:price:amount': product.priceInTRY.toString(),
-      'product:price:currency': 'TRY',
+      'product:price:amount': price.toString(),
+      'product:price:currency': currency,
       'product:availability': availability,
       'product:condition': 'new',
       'product:category': product.category,
@@ -96,32 +104,44 @@ export async function generateMetadata({ params }: ProductPageProps): Promise<Me
 
 // Generate static params for SSG
 export async function generateStaticParams() {
-  const { products } = await getProducts({ limit: 100 })
-  
-  return products.map((product: Product) => ({
-    slug: product.slug,
-  }))
+  try {
+    const { products } = await getProducts({ limit: 100 })
+    const locales = ['tr', 'en']
+    
+    const params = []
+    for (const locale of locales) {
+      for (const product of products) {
+        params.push({
+          locale,
+          slug: product.slug,
+        })
+      }
+    }
+    
+    return params
+  } catch (error) {
+    console.error('Error generating static params:', error)
+    return []
+  }
 }
 
 // ISR - Revalidate every 60 seconds
 export const revalidate = 60
 
 export default async function ProductPage({ params }: ProductPageProps) {
-  const { slug } = await params
-  const product = await getProductBySlug(slug)
+  const { locale, slug } = await params
+  const product = await getProductBySlug(slug, locale)
+  const t = getTranslations(locale)
 
   if (!product) {
     notFound()
   }
 
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY',
-    }).format(price)
-  }
+  // Get price and currency based on locale
+  const price = locale === 'en' ? product.price : product.priceInTRY
+  const originalPrice = locale === 'en' ? product.originalPrice : product.originalPriceInTRY
 
-  const currentUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/products/${product.slug}`
+  const currentUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/${locale}/products/${product.slug}`
 
   const productJsonLd = {
     '@context': 'https://schema.org',
@@ -139,8 +159,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
     offers: {
       '@type': 'Offer',
       url: currentUrl,
-      priceCurrency: 'TRY',
-      price: product.priceInTRY,
+      priceCurrency: locale === 'en' ? 'USD' : 'TRY',
+      price: price,
       availability: product.stock > 0 ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
       condition: 'https://schema.org/NewCondition',
       seller: {
@@ -162,15 +182,15 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <Breadcrumb className="mb-6">
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/">Ana Sayfa</BreadcrumbLink>
+            <BreadcrumbLink href={`/${locale}`}>{t.common.home}</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href="/products">Ürünler</BreadcrumbLink>
+            <BreadcrumbLink href={`/${locale}/products`}>{t.common.products}</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href={`/products?category=${product.categoryInfo.slug}`}>
+            <BreadcrumbLink href={`/${locale}/products?category=${product.categoryInfo.slug}`}>
               {product.categoryInfo.name}
             </BreadcrumbLink>
           </BreadcrumbItem>
@@ -218,42 +238,37 @@ export default async function ProductPage({ params }: ProductPageProps) {
               </div>
               <span className="font-medium">{product.rating.rate}</span>
             </div>
-            <span className="text-sm text-muted-foreground">({product.rating.count} değerlendirme)</span>
+            <span className="text-sm text-muted-foreground">({product.rating.count} {t.productDetail.reviews})</span>
           </div>
 
           <div className="space-y-2">
             <div className="flex items-baseline gap-3">
-              <span className="text-3xl font-bold">{formatPrice(product.priceInTRY)}</span>
-              {product.originalPriceInTRY && (
+              <span className="text-3xl font-bold">{formatCurrency(price, locale)}</span>
+              {originalPrice && (
                 <span className="text-xl text-muted-foreground line-through">
-                  {formatPrice(product.originalPriceInTRY)}
+                  {formatCurrency(originalPrice, locale)}
                 </span>
               )}
             </div>
-            {product.price && (
-              <p className="text-sm text-muted-foreground">
-                USD: ${product.price.toFixed(2)}
-              </p>
-            )}
           </div>
 
           <div className="flex items-center gap-2">
             {product.stock > 0 ? (
               <>
                 <Package className="h-5 w-5 text-green-600" />
-                <span className="text-green-600 font-medium">Stokta var</span>
-                <span className="text-sm text-muted-foreground">({product.stock} adet)</span>
+                <span className="text-green-600 font-medium">{t.common.inStock}</span>
+                <span className="text-sm text-muted-foreground">({product.stock} {t.productDetail.pieces})</span>
               </>
             ) : (
               <>
                 <AlertCircle className="h-5 w-5 text-red-600" />
-                <span className="text-red-600 font-medium">Stokta yok</span>
+                <span className="text-red-600 font-medium">{t.common.outOfStock}</span>
               </>
             )}
           </div>
 
           <div className="prose prose-sm max-w-none">
-            <h3 className="font-semibold">Ürün Açıklaması</h3>
+            <h3 className="font-semibold">{t.productDetail.productDescription}</h3>
             <p className="text-muted-foreground">{product.description}</p>
           </div>
 
@@ -264,20 +279,20 @@ export default async function ProductPage({ params }: ProductPageProps) {
           />
 
           <Card className="p-4">
-            <h3 className="font-semibold mb-3">Ürün Özellikleri</h3>
+            <h3 className="font-semibold mb-3">{t.productDetail.productFeatures}</h3>
             <dl className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <dt className="text-muted-foreground">Kategori:</dt>
+                <dt className="text-muted-foreground">{t.productDetail.category}:</dt>
                 <dd className="font-medium">{product.categoryInfo.name}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-muted-foreground">Ürün Kodu:</dt>
+                <dt className="text-muted-foreground">{t.productDetail.productCode}:</dt>
                 <dd className="font-medium">#{product.id}</dd>
               </div>
               <div className="flex justify-between">
-                <dt className="text-muted-foreground">Eklenme Tarihi:</dt>
+                <dt className="text-muted-foreground">{t.productDetail.addedDate}:</dt>
                 <dd className="font-medium">
-                  {new Date(product.createdAt).toLocaleDateString('tr-TR')}
+                  {formatDate(new Date(product.createdAt), locale)}
                 </dd>
               </div>
             </dl>
@@ -288,7 +303,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
       <div className="mt-16">
         <RelatedProducts 
           currentProductId={product.id} 
-          categorySlug={product.categoryInfo.slug} 
+          categorySlug={product.categoryInfo.slug}
+          locale={locale}
         />
       </div>
 

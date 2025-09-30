@@ -16,13 +16,20 @@ import {
 } from '@/components/ui/sheet'
 import { getCategories } from '@/app/lib/api/products'
 import { Category } from '@/app/types'
+import { Locale, getTranslations, formatCurrency } from '@/app/i18n'
+
+interface ProductFiltersProps {
+  locale: Locale
+}
 
 const UncontrolledSlider = memo(({ 
   defaultValue, 
-  onValueCommit 
+  onValueCommit,
+  locale 
 }: { 
   defaultValue: number[]
   onValueCommit: (value: number[]) => void 
+  locale: Locale
 }) => {
   const [value, setValue] = useState(defaultValue)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -58,8 +65,8 @@ const UncontrolledSlider = memo(({
         className="w-full"
       />
       <div className="flex justify-between text-sm text-muted-foreground mt-2">
-        <span>{value[0].toLocaleString('tr-TR')} ₺</span>
-        <span>{value[1].toLocaleString('tr-TR')} ₺</span>
+        <span>{formatCurrency(value[0], locale)}</span>
+        <span>{formatCurrency(value[1], locale)}</span>
       </div>
     </>
   )
@@ -67,12 +74,13 @@ const UncontrolledSlider = memo(({
 
 UncontrolledSlider.displayName = 'UncontrolledSlider'
 
-export function ProductFilters() {
+export function ProductFilters({ locale }: ProductFiltersProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [categories, setCategories] = useState<Category[]>([])
   const [isOpen, setIsOpen] = useState(false)
+  const t = getTranslations(locale)
   
   const searchInputRef = useRef<HTMLInputElement>(null)
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -83,8 +91,8 @@ export function ProductFilters() {
   const currentSearch = searchParams.get('search') || ''
 
   useEffect(() => {
-    getCategories().then(setCategories)
-  }, [])
+    getCategories(locale).then(setCategories)
+  }, [locale])
 
   const updateURL = (key: string, value: string | null) => {
     const params = new URLSearchParams(searchParams.toString())
@@ -170,10 +178,10 @@ export function ProductFilters() {
   const FilterContent = memo(() => (
     <div className="space-y-6">
       <div>
-        <h3 className="font-semibold mb-3">Arama</h3>
+        <h3 className="font-semibold mb-3">{t.common.search}</h3>
         <Input
           ref={searchInputRef}
-          placeholder="Ürün ara..."
+          placeholder={t.common.searchPlaceholder}
           defaultValue={currentSearch}
           onChange={handleSearchInput}
           type="search"
@@ -181,7 +189,7 @@ export function ProductFilters() {
       </div>
 
       <div>
-        <h3 className="font-semibold mb-3">Kategoriler</h3>
+        <h3 className="font-semibold mb-3">{t.products.categories}</h3>
         <div className="space-y-2">
           {categories.map((category) => (
             <div key={category.id} className="flex items-center space-x-2">
@@ -204,10 +212,11 @@ export function ProductFilters() {
       </div>
 
       <div>
-        <h3 className="font-semibold mb-3">Fiyat Aralığı</h3>
+        <h3 className="font-semibold mb-3">{t.products.priceRange}</h3>
         <UncontrolledSlider
           defaultValue={[currentMinPrice, currentMaxPrice]}
           onValueCommit={handlePriceChange}
+          locale={locale}
         />
       </div>
 
@@ -218,7 +227,7 @@ export function ProductFilters() {
           className="w-full"
         >
           <X className="h-4 w-4 mr-2" />
-          Filtreleri Temizle
+          {t.products.clearFilters}
         </Button>
       )}
     </div>
@@ -231,10 +240,10 @@ export function ProductFilters() {
       <div className="hidden lg:block w-64 shrink-0">
         <div className="sticky top-24 bg-card rounded-lg border p-4">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold">Filtreler</h2>
+            <h2 className="font-semibold">{t.products.filters}</h2>
             {hasActiveFilters && (
               <span className="text-xs bg-primary text-primary-foreground px-2 py-1 rounded">
-                Aktif
+                {t.products.active}
               </span>
             )}
           </div>
@@ -246,7 +255,7 @@ export function ProductFilters() {
         <SheetTrigger asChild className="lg:hidden">
           <Button variant="outline" size="sm">
             <Filter className="h-4 w-4 mr-2" />
-            Filtreler
+            {t.products.filters}
             {hasActiveFilters && (
               <span className="ml-2 bg-primary text-primary-foreground text-xs px-1.5 py-0.5 rounded">
                 {selectedCategories.length + (currentMinPrice > 0 || currentMaxPrice < 10000 ? 1 : 0) + (currentSearch ? 1 : 0)}
@@ -256,7 +265,7 @@ export function ProductFilters() {
         </SheetTrigger>
         <SheetContent side="left" className="w-[300px] sm:w-[350px]">
           <SheetHeader>
-            <SheetTitle>Filtreler</SheetTitle>
+            <SheetTitle>{t.products.filters}</SheetTitle>
           </SheetHeader>
           <div className="mt-6">
             <FilterContent />

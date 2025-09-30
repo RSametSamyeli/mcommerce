@@ -1,17 +1,24 @@
 import { Product, ProductFilters, ProductListResponse, Category } from '@/app/types'
+import { Locale, getTranslations } from '@/app/i18n'
 
 const USD_TO_TRY = 41.59
 
-const categoryMapping: Record<string, { name: string; slug: string; id: string }> = {
-  'electronics': { name: 'Elektronik', slug: 'elektronik', id: '1' },
-  'jewelery': { name: 'Takı & Aksesuar', slug: 'taki-aksesuar', id: '2' },
-  "men's clothing": { name: 'Erkek Giyim', slug: 'erkek-giyim', id: '3' },
-  "women's clothing": { name: 'Kadın Giyim', slug: 'kadin-giyim', id: '4' },
+const categoryMapping: Record<string, { slug: string; id: string; translationKey: string }> = {
+  'electronics': { slug: 'electronics', id: '1', translationKey: 'electronics' },
+  'jewelery': { slug: 'jewelery', id: '2', translationKey: 'jewelery' },
+  "men's clothing": { slug: 'mens-clothing', id: '3', translationKey: 'mensClothing' },
+  "women's clothing": { slug: 'womens-clothing', id: '4', translationKey: 'womensClothing' },
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-function enhanceProduct(apiProduct: any): Product {
-  const categoryInfo = categoryMapping[apiProduct.category] || {
+function enhanceProduct(apiProduct: any, locale: Locale = 'en'): Product {
+  const t = getTranslations(locale)
+  const categoryConfig = categoryMapping[apiProduct.category]
+  const categoryInfo = categoryConfig ? {
+    name: t.categories[categoryConfig.translationKey as keyof typeof t.categories],
+    slug: categoryConfig.slug,
+    id: categoryConfig.id
+  } : {
     name: apiProduct.category,
     slug: apiProduct.category.toLowerCase().replace(/\s+/g, '-'),
     id: '0'
@@ -22,11 +29,14 @@ function enhanceProduct(apiProduct: any): Product {
   const priceInTRY = apiProduct.price * USD_TO_TRY
   const originalPriceInTRY = discount ? priceInTRY : undefined
   const finalPriceInTRY = discount ? priceInTRY * (1 - discount / 100) : priceInTRY
+  const originalPrice = discount ? apiProduct.price : undefined
+  const finalPrice = discount ? apiProduct.price * (1 - discount / 100) : apiProduct.price
 
   return {
     id: apiProduct.id,
     title: apiProduct.title,
-    price: apiProduct.price,
+    price: finalPrice,
+    originalPrice,
     description: apiProduct.description,
     category: apiProduct.category,
     image: apiProduct.image,
@@ -45,14 +55,14 @@ function enhanceProduct(apiProduct: any): Product {
   }
 }
 
-async function fetchProducts(): Promise<Product[]> {
+async function fetchProducts(locale: Locale = 'en'): Promise<Product[]> {
   try {
     const response = await fetch('https://fakestoreapi.com/products')
     if (!response.ok) {
       throw new Error('Failed to fetch products')
     }
     const apiProducts = await response.json()
-    return apiProducts.map(enhanceProduct)
+    return apiProducts.map((product: any) => enhanceProduct(product, locale))
   } catch (error) {
     console.error('Error fetching products:', error)
     return []
@@ -63,10 +73,10 @@ let cachedProducts: Product[] | null = null
 let cacheTimestamp: number = 0
 const CACHE_DURATION = 60 * 1000 
 
-export async function getProducts(filters?: ProductFilters): Promise<ProductListResponse> {
+export async function getProducts(filters?: ProductFilters, locale: Locale = 'en'): Promise<ProductListResponse> {
   const now = Date.now()
   if (!cachedProducts || now - cacheTimestamp > CACHE_DURATION) {
-    cachedProducts = await fetchProducts()
+    cachedProducts = await fetchProducts(locale)
     cacheTimestamp = now
   }
 
@@ -138,9 +148,9 @@ export async function getProducts(filters?: ProductFilters): Promise<ProductList
   }
 }
 
-export async function getProductBySlug(slug: string): Promise<Product | null> {
+export async function getProductBySlug(slug: string, locale: Locale = 'en'): Promise<Product | null> {
   if (!cachedProducts) {
-    cachedProducts = await fetchProducts()
+    cachedProducts = await fetchProducts(locale)
     cacheTimestamp = Date.now()
   }
 
@@ -148,6 +158,11 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
   return product || null
 }
 
-export async function getCategories(): Promise<Category[]> {
-  return Object.values(categoryMapping)
+export async function getCategories(locale: Locale = 'en'): Promise<Category[]> {
+  const t = getTranslations(locale)
+  return Object.values(categoryMapping).map(category => ({
+    name: t.categories[category.translationKey as keyof typeof t.categories],
+    slug: category.slug,
+    id: category.id
+  }))
 }

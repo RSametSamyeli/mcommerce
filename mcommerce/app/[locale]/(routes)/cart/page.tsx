@@ -6,17 +6,17 @@ import { Minus, Plus, Trash2, ArrowLeft, ShoppingCartIcon } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { useCartStore } from '@/app/store/cart'
+import { useParams } from 'next/navigation'
+import { Locale, getTranslations, formatCurrency } from '@/app/i18n'
 
 export default function CartPage() {
+  const params = useParams()
+  const locale = params.locale as Locale
   const { items, totalItems, totalPriceInTRY, updateQuantity, removeItem, clearCart } = useCartStore()
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY',
-    }).format(price)
-  }
+  const t = getTranslations(locale)
 
-  const shippingCost = totalPriceInTRY > 500 ? 0 : 29.99
+  const shippingThreshold = locale === 'tr' ? 500 : 12 // 500 TRY or $12 USD
+  const shippingCost = totalPriceInTRY > shippingThreshold ? 0 : (locale === 'tr' ? 29.99 : 0.72) // 29.99 TRY or $0.72 USD
   const finalTotal = totalPriceInTRY + shippingCost
 
   if (items.length === 0) {
@@ -24,14 +24,14 @@ export default function CartPage() {
       <div className="container mx-auto px-4 py-16">
         <div className="max-w-md mx-auto text-center">
           <ShoppingCartIcon className="h-16 w-16 text-muted-foreground mx-auto mb-6" />
-          <h1 className="text-2xl font-bold mb-4">Sepetiniz Boş</h1>
+          <h1 className="text-2xl font-bold mb-4">{t.cart.emptyCartPage}</h1>
           <p className="text-muted-foreground mb-6">
-            Henüz sepetinize ürün eklemediniz. Alışverişe başlamak için ürünlerimizi inceleyin.
+            {t.cart.emptyCartPageDescription}
           </p>
           <Button asChild size="lg">
-            <Link href="/products">
+            <Link href={`/${locale}/products`}>
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Ürünleri İncele
+              {t.cart.browseProducts}
             </Link>
           </Button>
         </div>
@@ -44,14 +44,14 @@ export default function CartPage() {
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-4">
           <Button variant="ghost" size="icon" asChild>
-            <Link href="/products">
+            <Link href={`/${locale}/products`}>
               <ArrowLeft className="h-4 w-4" />
             </Link>
           </Button>
-          <h1 className="text-3xl font-bold">Sepetim</h1>
+          <h1 className="text-3xl font-bold">{t.cart.title}</h1>
         </div>
         <p className="text-muted-foreground">
-          {totalItems} ürün sepetinizde
+          {totalItems} {t.cart.itemsInCart}
         </p>
       </div>
 
@@ -61,7 +61,7 @@ export default function CartPage() {
             <Card key={item.id} className="p-4">
               <div className="flex items-center gap-4">
                 <Link 
-                  href={`/products/${item.product.slug}`}
+                  href={`/${locale}/products/${item.product.slug}`}
                   className="relative flex-shrink-0 w-20 h-20 bg-gray-100 rounded-lg overflow-hidden"
                 >
                   <Image
@@ -75,7 +75,7 @@ export default function CartPage() {
 
                 <div className="flex-1 space-y-2">
                   <Link 
-                    href={`/products/${item.product.slug}`}
+                    href={`/${locale}/products/${item.product.slug}`}
                     className="font-medium hover:text-primary line-clamp-2"
                   >
                     {item.product.title}
@@ -84,7 +84,7 @@ export default function CartPage() {
                     {item.product.categoryInfo.name}
                   </p>
                   <p className="font-semibold">
-                    {formatPrice(item.product.priceInTRY)}
+                    {formatCurrency(item.product.priceInTRY, locale)}
                   </p>
                 </div>
 
@@ -113,7 +113,7 @@ export default function CartPage() {
 
                   <div className="text-right space-y-2">
                     <p className="font-semibold">
-                      {formatPrice(item.product.priceInTRY * item.quantity)}
+                      {formatCurrency(item.product.priceInTRY * item.quantity, locale)}
                     </p>
                     <Button
                       variant="ghost"
@@ -122,7 +122,7 @@ export default function CartPage() {
                       className="text-muted-foreground hover:text-destructive"
                     >
                       <Trash2 className="h-4 w-4 mr-1" />
-                      Kaldır
+                      {t.common.remove}
                     </Button>
                   </div>
                 </div>
@@ -137,46 +137,46 @@ export default function CartPage() {
               className="text-muted-foreground hover:text-destructive"
             >
               <Trash2 className="h-4 w-4 mr-2" />
-              Sepeti Temizle
+              {t.cart.clearCart}
             </Button>
           </div>
         </div>
 
         <div className="space-y-6">
           <Card className="p-4">
-            <h3 className="font-semibold mb-4">Sipariş Özeti</h3>
+            <h3 className="font-semibold mb-4">{t.cart.orderSummary}</h3>
             <div className="space-y-3">
               <div className="flex justify-between">
-                <span>Ara Toplam:</span>
-                <span>{formatPrice(totalPriceInTRY)}</span>
+                <span>{t.cart.subtotal}:</span>
+                <span>{formatCurrency(totalPriceInTRY, locale)}</span>
               </div>
               <div className="flex justify-between">
-                <span>Kargo:</span>
+                <span>{t.cart.shipping}:</span>
                 <span>
                   {shippingCost === 0 ? (
-                    <span className="text-green-600 font-medium">Ücretsiz</span>
+                    <span className="text-green-600 font-medium">{t.cart.free}</span>
                   ) : (
-                    formatPrice(shippingCost)
+                    formatCurrency(shippingCost, locale)
                   )}
                 </span>
               </div>
               {shippingCost > 0 && (
                 <p className="text-xs text-muted-foreground">
-                  500₺ üzeri kargo ücretsiz
+                  {t.cart.freeShippingNote}
                 </p>
               )}
               <div className="border-t pt-3 flex justify-between text-lg font-bold">
-                <span>Toplam:</span>
-                <span>{formatPrice(finalTotal)}</span>
+                <span>{t.cart.total}:</span>
+                <span>{formatCurrency(finalTotal, locale)}</span>
               </div>
             </div>
 
             <div className="mt-6 space-y-3">
               <Button className="w-full" size="lg">
-                Ödemeye Geç
+                {t.cart.proceedToCheckout}
               </Button>
               <Button variant="outline" className="w-full" asChild>
-                <Link href="/products">Alışverişe Devam Et</Link>
+                <Link href={`/${locale}/products`}>{t.cart.continueShopping}</Link>
               </Button>
             </div>
           </Card>

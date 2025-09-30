@@ -4,13 +4,17 @@ import { memo, useMemo } from 'react'
 import { Product } from '@/app/types'
 import { ProductCard } from './ProductCard'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Locale, getTranslations } from '@/app/i18n'
 
 interface ProductListProps {
   products: Product[]
+  locale: Locale
   loading?: boolean
 }
 
-const ProductListComponent = ({ products, loading }: ProductListProps) => {
+const ProductListComponent = ({ products, locale, loading }: ProductListProps) => {
+  const t = getTranslations(locale)
+  
   const skeletonItems = useMemo(() => 
     Array.from({ length: 12 }).map((_, index) => (
       <ProductListSkeleton key={index} />
@@ -20,9 +24,9 @@ const ProductListComponent = ({ products, loading }: ProductListProps) => {
 
   const productItems = useMemo(() => 
     products.map((product) => (
-      <ProductCard key={product.id} product={product} />
+      <ProductCard key={product.id} product={product} locale={locale} />
     )), 
-    [products]
+    [products, locale]
   )
 
   if (loading) {
@@ -36,9 +40,12 @@ const ProductListComponent = ({ products, loading }: ProductListProps) => {
   if (products.length === 0) {
     return (
       <div className="text-center py-12">
-        <p className="text-lg text-muted-foreground">Ürün bulunamadı</p>
+        <p className="text-lg text-muted-foreground">{t.products.noResults}</p>
         <p className="text-sm text-muted-foreground mt-2">
-          Farklı filtreler deneyebilir veya arama kriterlerinizi değiştirebilirsiniz.
+          {locale === 'tr' 
+            ? 'Farklı filtreler deneyebilir veya arama kriterlerinizi değiştirebilirsiniz.'
+            : 'You can try different filters or change your search criteria.'
+          }
         </p>
       </div>
     )

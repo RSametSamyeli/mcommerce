@@ -7,32 +7,37 @@ import { ProductSort } from '@/app/components/product/ProductSort'
 import { ProductFilters } from '@/app/components/product/ProductFilters'
 import { ProductFilters as ProductFiltersType } from '@/app/types'
 import { ErrorBoundary } from '@/app/components/ui/error-boundary'
+import { Locale, getTranslations } from '@/app/i18n'
 
 export async function generateMetadata({
+  params,
   searchParams,
 }: {
+  params: Promise<{ locale: Locale }>
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }): Promise<Metadata> {
-  const params = await searchParams
-  const search = params.search as string
-  const category = params.categories as string
-  const page = params.page as string
+  const { locale } = await params
+  const searchParams_ = await searchParams
+  const search = searchParams_.search as string
+  const category = searchParams_.categories as string
+  const page = searchParams_.page as string
+  const t = getTranslations(locale)
 
-  let title = 'Ürünler - MCommerce'
-  let description = 'En yeni ve popüler ürünleri keşfedin. Kaliteli ürünler, uygun fiyatlar.'
+  let title = t.metadata.productsTitle
+  let description = t.metadata.productsDescription
 
   if (search) {
-    title = `"${search}" için arama sonuçları - MCommerce`
-    description = `"${search}" araması için bulunan ürünler. En uygun fiyatlar ve hızlı teslimat.`
+    title = `"${search}" ${t.products.searchResults} - MCommerce`
+    description = `"${search}" ${t.products.searchResults}. ${t.metadata.productsDescription}`
   }
 
   if (category) {
-    title = `${category} Kategorisi - MCommerce`
-    description = `${category} kategorisindeki en iyi ürünler. Kaliteli ${category} ürünleri keşfedin.`
+    title = `${category} ${t.products.category} - MCommerce`
+    description = `${category} ${t.products.category} ${t.metadata.productsDescription}`
   }
 
   if (page && parseInt(page) > 1) {
-    title += ` - Sayfa ${page}`
+    title += ` - ${page}`
   }
 
   return {
@@ -85,6 +90,7 @@ export async function generateMetadata({
 export const revalidate = 60
 
 interface ProductsPageProps {
+  params: Promise<{ locale: Locale }>
   searchParams: Promise<{
     page?: string
     sortBy?: string
@@ -95,54 +101,56 @@ interface ProductsPageProps {
   }>
 }
 
-export default async function ProductsPage({ searchParams }: ProductsPageProps) {
-  // Parse search params
-  const params = await searchParams
+export default async function ProductsPage({ params, searchParams }: ProductsPageProps) {
+  // Parse params and search params
+  const { locale } = await params
+  const searchParams_ = await searchParams
+  const t = getTranslations(locale)
   const filters: ProductFiltersType = {
-    page: params.page ? parseInt(params.page) : 1,
-    sortBy: params.sortBy as ProductFiltersType['sortBy'],
-    search: params.search,
-    categories: params.category ? params.category.split(',') : undefined,
-    minPrice: params.minPrice ? parseFloat(params.minPrice) : undefined,
-    maxPrice: params.maxPrice ? parseFloat(params.maxPrice) : undefined,
+    page: searchParams_.page ? parseInt(searchParams_.page) : 1,
+    sortBy: searchParams_.sortBy as ProductFiltersType['sortBy'],
+    search: searchParams_.search,
+    categories: searchParams_.category ? searchParams_.category.split(',') : undefined,
+    minPrice: searchParams_.minPrice ? parseFloat(searchParams_.minPrice) : undefined,
+    maxPrice: searchParams_.maxPrice ? parseFloat(searchParams_.maxPrice) : undefined,
     limit: 12,
   }
 
-  const productData = await getProducts(filters)
+  const productData = await getProducts(filters, locale)
 
   return (
     <div className="container mx-auto px-4 py-8">
       <header className="mb-8">
         <div className="flex items-center justify-between mb-4">
-          <h1 className="text-3xl font-bold">Ürünler</h1>
+          <h1 className="text-3xl font-bold">{t.products.title}</h1>
         </div>
         {filters.search && (
           <p className="text-muted-foreground" role="status" aria-live="polite">
-            &quot;{filters.search}&quot; için arama sonuçları ({productData.total} ürün)
+            &quot;{filters.search}&quot; {t.products.searchResults} ({productData.total} {t.products.resultsFound})
           </p>
         )}
       </header>
 
       <div className="lg:flex lg:gap-8">
-        <aside className="lg:w-64 mb-6 lg:mb-0" role="complementary" aria-label="Ürün filtreleri">
-          <ProductFilters />
+        <aside className="lg:w-64 mb-6 lg:mb-0" role="complementary" aria-label={t.products.filters}>
+          <ProductFilters locale={locale} />
         </aside>
 
-        <section className="lg:flex-1" aria-label="Ürün listesi">
+        <section className="lg:flex-1" aria-label={t.products.title}>
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <p className="text-sm text-muted-foreground">
-              {productData.total} ürün bulundu
+              {productData.total} {t.products.resultsFound}
             </p>
-            <ProductSort />
+            <ProductSort locale={locale} />
           </div>
 
           <ErrorBoundary>
-            <Suspense fallback={<ProductList products={[]} loading={true} />}>
-              <ProductList products={productData.products} />
+            <Suspense fallback={<ProductList products={[]} loading={true} locale={locale} />}>
+              <ProductList products={productData.products} locale={locale} />
             </Suspense>
           </ErrorBoundary>
 
-          <nav aria-label="Sayfa navigasyonu">
+          <nav aria-label="Page navigation">
             <ProductPagination
               currentPage={productData.page}
               totalPages={productData.totalPages}

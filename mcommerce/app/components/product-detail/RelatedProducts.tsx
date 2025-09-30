@@ -5,15 +5,18 @@ import Link from 'next/link'
 import { ProductCard } from '../product/ProductCard'
 import { getProducts } from '@/app/lib/api/products'
 import { Product } from '@/app/types'
+import { Locale, getTranslations } from '@/app/i18n'
 
 interface RelatedProductsProps {
   currentProductId: number
   categorySlug: string
+  locale: Locale
 }
 
-export function RelatedProducts({ currentProductId, categorySlug }: RelatedProductsProps) {
+export function RelatedProducts({ currentProductId, categorySlug, locale }: RelatedProductsProps) {
   const [relatedProducts, setRelatedProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const t = getTranslations(locale)
 
   useEffect(() => {
     async function fetchRelatedProducts() {
@@ -22,7 +25,7 @@ export function RelatedProducts({ currentProductId, categorySlug }: RelatedProdu
         const { products } = await getProducts({
           categories: [categorySlug],
           limit: 5,
-        })
+        }, locale)
         
 
         const filtered = products
@@ -43,7 +46,7 @@ export function RelatedProducts({ currentProductId, categorySlug }: RelatedProdu
   if (loading) {
     return (
       <div className="space-y-4">
-        <h2 className="text-2xl font-bold">İlgili Ürünler</h2>
+        <h2 className="text-2xl font-bold">{t.productDetail.relatedProducts}</h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
             <div key={i} className="animate-pulse">
@@ -64,18 +67,18 @@ export function RelatedProducts({ currentProductId, categorySlug }: RelatedProdu
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold">İlgili Ürünler</h2>
+        <h2 className="text-2xl font-bold">{t.productDetail.relatedProducts}</h2>
         <Link 
-          href={`/products?category=${categorySlug}`}
+          href={`/${locale}/products?category=${categorySlug}`}
           className="text-sm text-primary hover:underline"
         >
-          Tümünü Gör
+          {t.productDetail.viewAll}
         </Link>
       </div>
       
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {relatedProducts.map((product) => (
-          <ProductCard key={product.id} product={product} />
+          <ProductCard key={product.id} product={product} locale={locale} />
         ))}
       </div>
     </div>

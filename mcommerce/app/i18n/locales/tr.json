@@ -1,0 +1,105 @@
+{
+  "common": {
+    "home": "Ana Sayfa",
+    "products": "Ürünler",
+    "cart": "Sepet",
+    "search": "Arama",
+    "searchPlaceholder": "Ürün ara...",
+    "loading": "Yükleniyor...",
+    "menu": "Menü",
+    "price": "Fiyat",
+    "total": "Toplam",
+    "quantity": "Adet",
+    "remove": "Kaldır",
+    "backToProducts": "Geri Dön",
+    "addToCart": "Sepete Ekle",
+    "inStock": "Stokta",
+    "outOfStock": "Stokta Yok",
+    "backToProducts": "Ürünlere Dön"
+  },
+  "navigation": {
+    "electronics": "Elektronik",
+    "jewelry": "Takı & Aksesuar",
+    "menClothing": "Erkek Giyim",
+    "womenClothing": "Kadın Giyim"
+  },
+  "categories": {
+    "electronics": "Elektronik",
+    "jewelery": "Takı & Aksesuar",
+    "mensClothing": "Erkek Giyim",
+    "womensClothing": "Kadın Giyim"
+  },
+  "products": {
+    "title": "Ürünler",
+    "resultsFound": "ürün bulundu",
+    "searchResults": "için arama sonuçları",
+    "noResults": "Sonuç bulunamadı",
+    "filters": "Filtreler",
+    "clearFilters": "Filtreleri Temizle",
+    "categories": "Kategoriler",
+    "category": "Kategori",
+    "priceRange": "Fiyat Aralığı",
+    "active": "Aktif",
+    "sortBy": "Sırala",
+    "sortOptions": {
+      "newest": "En Yeni",
+      "name": "İsim",
+      "priceLowToHigh": "Fiyat (Düşükten Yükseğe)",
+      "priceHighToLow": "Fiyat (Yüksekten Düşüğe)",
+      "popularity": "Popülerlik",
+      "nameAsc": "İsim (A-Z)",
+      "nameDesc": "İsim (Z-A)"
+    }
+  },
+  "cart": {
+    "title": "Sepetim",
+    "empty": "Sepetiniz boş",
+    "emptyDescription": "Alışverişe başlamak için ürünleri sepete ekleyin",
+    "continueShopping": "Alışverişe Devam Et",
+    "subtotal": "Ara Toplam",
+    "total": "Toplam",
+    "itemsCount": "{{count}} ürün",
+    "decreaseQuantity": "miktarını azalt",
+    "increaseQuantity": "miktarını artır",
+    "removeFromCart": "ürünü sepetten kaldır",
+    "quantity": "Miktar",
+    "clearCart": "Sepeti Temizle",
+    "emptyCartPage": "Sepetiniz Boş",
+    "emptyCartPageDescription": "Henüz sepetinize ürün eklemediniz. Alışverişe başlamak için ürünlerimizi inceleyin.",
+    "browseProducts": "Ürünleri İncele",
+    "itemsInCart": "ürün sepetinizde",
+    "orderSummary": "Sipariş Özeti",
+    "shipping": "Kargo",
+    "free": "Ücretsiz",
+    "freeShippingNote": "500₺ üzeri kargo ücretsiz",
+    "proceedToCheckout": "Ödemeye Geç"
+  },
+  "footer": {
+    "about": "Hakkımızda",
+    "contact": "İletişim",
+    "privacy": "Gizlilik Politikası",
+    "terms": "Kullanım Şartları",
+    "allRightsReserved": "Tüm hakları saklıdır"
+  },
+  "productDetail": {
+    "notFound": "Ürün Bulunamadı",
+    "notFoundDescription": "Aradığınız ürün bulunamadı.",
+    "reviews": "değerlendirme",
+    "productCode": "Ürün Kodu",
+    "addedDate": "Eklenme Tarihi",
+    "productDescription": "Ürün Açıklaması",
+    "productFeatures": "Ürün Özellikleri",
+    "category": "Kategori",
+    "relatedProducts": "İlgili Ürünler",
+    "discount": "İndirim",
+    "new": "Yeni",
+    "pieces": "adet",
+    "viewAll": "Tümünü Gör"
+  },
+  "metadata": {
+    "siteTitle": "Mini E-Commerce - Modern Alışveriş Deneyimi",
+    "siteDescription": "En yeni ürünler, en iyi fiyatlar. Modern e-ticaret deneyimi.",
+    "productsTitle": "Ürünler - MCommerce",
+    "productsDescription": "En yeni ve popüler ürünleri keşfedin. Kaliteli ürünler, uygun fiyatlar."
+  }
+}

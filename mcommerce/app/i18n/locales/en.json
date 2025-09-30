@@ -1,0 +1,105 @@
+{
+  "common": {
+    "home": "Home",
+    "products": "Products",
+    "cart": "Cart",
+    "search": "Search",
+    "searchPlaceholder": "Search products...",
+    "loading": "Loading...",
+    "menu": "Menu",
+    "price": "Price",
+    "total": "Total",
+    "quantity": "Quantity",
+    "remove": "Remove",
+    "backToProducts": "Back to Products",
+    "addToCart": "Add to Cart",
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "backToProducts": "Back to Products"
+  },
+  "navigation": {
+    "electronics": "Electronics",
+    "jewelry": "Jewelry & Accessories",
+    "menClothing": "Men's Clothing",
+    "womenClothing": "Women's Clothing"
+  },
+  "categories": {
+    "electronics": "Electronics",
+    "jewelery": "Jewelry & Accessories",
+    "mensClothing": "Men's Clothing",
+    "womensClothing": "Women's Clothing"
+  },
+  "products": {
+    "title": "Products",
+    "resultsFound": "products found",
+    "searchResults": "search results for",
+    "noResults": "No results found",
+    "filters": "Filters",
+    "clearFilters": "Clear Filters",
+    "categories": "Categories",
+    "category": "Category",
+    "priceRange": "Price Range",
+    "active": "Active",
+    "sortBy": "Sort By",
+    "sortOptions": {
+      "newest": "Newest",
+      "name": "Name",
+      "priceLowToHigh": "Price (Low to High)",
+      "priceHighToLow": "Price (High to Low)",
+      "popularity": "Popularity",
+      "nameAsc": "Name (A-Z)",
+      "nameDesc": "Name (Z-A)"
+    }
+  },
+  "cart": {
+    "title": "My Cart",
+    "empty": "Your cart is empty",
+    "emptyDescription": "Add products to cart to start shopping",
+    "continueShopping": "Continue Shopping",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "itemsCount": "{{count}} items",
+    "decreaseQuantity": "decrease quantity",
+    "increaseQuantity": "increase quantity",
+    "removeFromCart": "remove from cart",
+    "quantity": "Quantity",
+    "clearCart": "Clear Cart",
+    "emptyCartPage": "Your Cart is Empty",
+    "emptyCartPageDescription": "You haven't added any products to your cart yet. Browse our products to start shopping.",
+    "browseProducts": "Browse Products",
+    "itemsInCart": "items in your cart",
+    "orderSummary": "Order Summary",
+    "shipping": "Shipping",
+    "free": "Free",
+    "freeShippingNote": "Free shipping on orders over $12",
+    "proceedToCheckout": "Proceed to Checkout"
+  },
+  "footer": {
+    "about": "About Us",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "allRightsReserved": "All rights reserved"
+  },
+  "productDetail": {
+    "notFound": "Product Not Found",
+    "notFoundDescription": "The product you are looking for was not found.",
+    "reviews": "reviews",
+    "productCode": "Product Code",
+    "addedDate": "Added Date",
+    "productDescription": "Product Description",
+    "productFeatures": "Product Features",
+    "category": "Category",
+    "relatedProducts": "Related Products",
+    "discount": "Discount",
+    "new": "New",
+    "pieces": "pieces",
+    "viewAll": "View All"
+  },
+  "metadata": {
+    "siteTitle": "Mini E-Commerce - Modern Shopping Experience",
+    "siteDescription": "Latest products, best prices. Modern e-commerce experience.",
+    "productsTitle": "Products - MCommerce",
+    "productsDescription": "Discover the latest and most popular products. Quality products, affordable prices."
+  }
+}

@@ -13,21 +13,17 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import { useCartStore } from '@/app/store/cart'
+import { Locale, getTranslations, formatCurrency } from '@/app/i18n'
 
 interface CartDrawerProps {
   children: React.ReactNode
+  locale: Locale
 }
 
-export function CartDrawer({ children }: CartDrawerProps) {
+export function CartDrawer({ children, locale }: CartDrawerProps) {
   const [isOpen, setIsOpen] = useState(false)
   const { items, totalItems, totalPriceInTRY, updateQuantity, removeItem, clearCart } = useCartStore()
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('tr-TR', {
-      style: 'currency',
-      currency: 'TRY',
-    }).format(price)
-  }
+  const t = getTranslations(locale)
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
@@ -38,7 +34,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
         <SheetHeader>
           <SheetTitle className="flex items-center gap-2">
             <ShoppingCart className="h-5 w-5" />
-            Sepetim ({totalItems} ürün)
+            {t.cart.title} ({totalItems} {t.cart.itemsCount.replace('{{count}}', totalItems.toString())})
           </SheetTitle>
         </SheetHeader>
         
@@ -48,19 +44,19 @@ export function CartDrawer({ children }: CartDrawerProps) {
           className="sr-only"
           role="status"
         >
-          Sepette {totalItems} ürün, toplam {formatPrice(totalPriceInTRY)}
+          {t.cart.title} {totalItems} {t.cart.itemsCount.replace('{{count}}', totalItems.toString())}, {t.cart.total} {formatCurrency(totalPriceInTRY, locale)}
         </div>
 
         <div className="flex flex-col h-full">
           {items.length === 0 ? (
             <div className="flex-1 flex flex-col items-center justify-center text-center py-8">
               <ShoppingCart className="h-12 w-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-medium mb-2">Sepetiniz Boş</h3>
+              <h3 className="text-lg font-medium mb-2">{t.cart.empty}</h3>
               <p className="text-muted-foreground mb-4">
-                Alışverişe başlamak için ürün ekleyin
+                {t.cart.emptyDescription}
               </p>
               <Button asChild onClick={() => setIsOpen(false)}>
-                <Link href="/products">Ürünleri İncele</Link>
+                <Link href={`/${locale}/products`}>{t.cart.continueShopping}</Link>
               </Button>
             </div>
           ) : (
@@ -70,7 +66,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                   {items.map((item) => (
                     <div key={item.id} className="flex items-center gap-3 p-3 border rounded-lg">
                       <Link 
-                        href={`/products/${item.product.slug}`}
+                        href={`/${locale}/products/${item.product.slug}`}
                         onClick={() => setIsOpen(false)}
                         className="relative flex-shrink-0 w-16 h-16 bg-gray-100 rounded-md overflow-hidden"
                       >
@@ -85,14 +81,14 @@ export function CartDrawer({ children }: CartDrawerProps) {
 
                       <div className="flex-1 min-w-0">
                         <Link 
-                          href={`/products/${item.product.slug}`}
+                          href={`/${locale}/products/${item.product.slug}`}
                           onClick={() => setIsOpen(false)}
                           className="font-medium text-sm hover:text-primary line-clamp-2"
                         >
                           {item.product.title}
                         </Link>
                         <p className="text-sm text-muted-foreground">
-                          {formatPrice(item.product.priceInTRY)}
+                          {formatCurrency(item.product.priceInTRY, locale)}
                         </p>
                       </div>
 
@@ -103,11 +99,11 @@ export function CartDrawer({ children }: CartDrawerProps) {
                             size="icon"
                             className="h-8 w-8"
                             onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
-                            aria-label={`${item.product.title} miktarını azalt`}
+                            aria-label={`${item.product.title} ${t.cart.decreaseQuantity}`}
                           >
                             <Minus className="h-3 w-3" />
                           </Button>
-                          <span className="px-2 text-sm font-medium" aria-label={`Miktar: ${item.quantity}`}>
+                          <span className="px-2 text-sm font-medium" aria-label={`${t.cart.quantity}: ${item.quantity}`}>
                             {item.quantity}
                           </span>
                           <Button
@@ -115,7 +111,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                             size="icon"
                             className="h-8 w-8"
                             onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                            aria-label={`${item.product.title} miktarını artır`}
+                            aria-label={`${item.product.title} ${t.cart.increaseQuantity}`}
                           >
                             <Plus className="h-3 w-3" />
                           </Button>
@@ -126,7 +122,7 @@ export function CartDrawer({ children }: CartDrawerProps) {
                           size="icon"
                           className="h-8 w-8 text-muted-foreground hover:text-destructive"
                           onClick={() => removeItem(item.product.id)}
-                          aria-label={`${item.product.title} ürünü sepetten kaldır`}
+                          aria-label={`${item.product.title} ${t.cart.removeFromCart}`}
                         >
                           <Trash2 className="h-3 w-3" />
                         </Button>
@@ -142,22 +138,22 @@ export function CartDrawer({ children }: CartDrawerProps) {
                   size="sm"
                   onClick={clearCart}
                   className="w-full"
-                  aria-label="Sepetteki tüm ürünleri temizle"
+                  aria-label={t.cart.clearCart}
                 >
                   <Trash2 className="h-4 w-4 mr-2" />
-                  Sepeti Temizle
+                  {t.cart.clearCart}
                 </Button>
 
                 <div className="space-y-2">
                   <div className="flex justify-between text-lg font-semibold">
-                    <span>Toplam:</span>
-                    <span>{formatPrice(totalPriceInTRY)}</span>
+                    <span>{t.cart.subtotal}:</span>
+                    <span>{formatCurrency(totalPriceInTRY, locale)}</span>
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <Button asChild className="w-full" onClick={() => setIsOpen(false)}>
-                    <Link href="/cart">Sepeti Görüntüle</Link>
+                    <Link href={`/${locale}/cart`}>{t.cart.title}</Link>
                   </Button>
                 </div>
               </div>

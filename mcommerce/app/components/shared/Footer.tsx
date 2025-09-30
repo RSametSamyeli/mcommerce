@@ -1,35 +1,41 @@
 import Link from 'next/link'
 import { Facebook, Twitter, Instagram, Mail, Phone, MapPin } from 'lucide-react'
+import { Locale, getTranslations } from '@/app/i18n'
 
-export function Footer() {
+interface FooterProps {
+  locale: Locale
+}
+
+export function Footer({ locale }: FooterProps) {
   const currentYear = new Date().getFullYear()
+  const t = getTranslations(locale)
 
   const footerSections = [
     {
-      title: 'Kurumsal',
+      title: locale === 'tr' ? 'Kurumsal' : 'Corporate',
       links: [
-        { label: 'Hakkımızda', href: '/about' },
-        { label: 'İletişim', href: '/contact' },
-        { label: 'Kariyer', href: '/careers' },
-        { label: 'Blog', href: '/blog' },
+        { label: locale === 'tr' ? 'Hakkımızda' : 'About Us', href: `/${locale}/about` },
+        { label: locale === 'tr' ? 'İletişim' : 'Contact', href: `/${locale}/contact` },
+        { label: locale === 'tr' ? 'Kariyer' : 'Careers', href: `/${locale}/careers` },
+        { label: 'Blog', href: `/${locale}/blog` },
       ],
     },
     {
-      title: 'Müşteri Hizmetleri',
+      title: locale === 'tr' ? 'Müşteri Hizmetleri' : 'Customer Service',
       links: [
-        { label: 'Sıkça Sorulan Sorular', href: '/faq' },
-        { label: 'Kargo ve Teslimat', href: '/shipping' },
-        { label: 'İade ve Değişim', href: '/returns' },
-        { label: 'Güvenli Alışveriş', href: '/security' },
+        { label: locale === 'tr' ? 'Sıkça Sorulan Sorular' : 'FAQ', href: `/${locale}/faq` },
+        { label: locale === 'tr' ? 'Kargo ve Teslimat' : 'Shipping & Delivery', href: `/${locale}/shipping` },
+        { label: locale === 'tr' ? 'İade ve Değişim' : 'Returns & Exchanges', href: `/${locale}/returns` },
+        { label: locale === 'tr' ? 'Güvenli Alışveriş' : 'Secure Shopping', href: `/${locale}/security` },
       ],
     },
     {
-      title: 'Kategoriler',
+      title: locale === 'tr' ? 'Kategoriler' : 'Categories',
       links: [
-        { label: 'Elektronik', href: '/products?category=elektronik' },
-        { label: 'Takı & Aksesuar', href: '/products?category=taki-aksesuar' },
-        { label: 'Erkek Giyim', href: '/products?category=erkek-giyim' },
-        { label: 'Kadın Giyim', href: '/products?category=kadin-giyim' },
+        { label: t.navigation.electronics, href: `/${locale}/products?category=electronics` },
+        { label: t.navigation.jewelry, href: `/${locale}/products?category=jewelery` },
+        { label: t.navigation.menClothing, href: `/${locale}/products?category=men's clothing` },
+        { label: t.navigation.womenClothing, href: `/${locale}/products?category=women's clothing` },
       ],
     },
   ]
@@ -39,12 +45,14 @@ export function Footer() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8">
           <div className="lg:col-span-2">
-            <Link href="/" className="flex items-center space-x-2 mb-4">
+            <Link href={`/${locale}`} className="flex items-center space-x-2 mb-4">
               <span className="text-2xl font-bold">Mini E-Commerce</span>
             </Link>
             <p className="text-gray-600 dark:text-gray-400 mb-4 max-w-sm">
-              Modern alışveriş deneyimi için güvenilir adresiniz. En kaliteli ürünler, en uygun
-              fiyatlar.
+              {locale === 'tr' 
+                ? 'Modern alışveriş deneyimi için güvenilir adresiniz. En kaliteli ürünler, en uygun fiyatlar.'
+                : 'Your reliable address for modern shopping experience. Best quality products, best prices.'
+              }
             </p>
             <div className="flex space-x-4">
               <a
@@ -96,34 +104,34 @@ export function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
             <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-400">
               <Phone className="h-4 w-4" />
-              <span>0850 123 45 67</span>
+              <span>{locale === 'tr' ? '0850 123 45 67' : '0850 123 45 67'}</span>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-400">
               <Mail className="h-4 w-4" />
-              <span>destek@miniecommerce.com</span>
+              <span>{locale === 'tr' ? 'destek@miniecommerce.com' : 'destek@miniecommerce.com'}</span>
             </div>
             <div className="flex items-center space-x-3 text-sm text-gray-600 dark:text-gray-400">
               <MapPin className="h-4 w-4" />
-              <span>İstanbul, Türkiye</span>
+              <span>{locale === 'tr' ? 'İstanbul, Türkiye' : 'Istanbul, Türkiye'}</span>
             </div>
           </div>
 
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-gray-600 dark:text-gray-400">
-              © {currentYear} Mini E-Commerce. Tüm hakları saklıdır.
+              © {currentYear} Mini E-Commerce. {t.footer.allRightsReserved}
             </p>
             <div className="flex space-x-6 mt-4 md:mt-0">
               <Link
-                href="/privacy"
+                href={`/${locale}/privacy`}
                 className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
               >
-                Gizlilik Politikası
+                {t.footer.privacy}
               </Link>
               <Link
-                href="/terms"
+                href={`/${locale}/terms`}
                 className="text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
               >
-                Kullanım Koşulları
+                {t.footer.terms}
               </Link>
             </div>
           </div>
