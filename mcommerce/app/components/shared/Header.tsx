@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/dropdown-menu'
 import { useRouter } from 'next/navigation'
 import { useCartStore } from '@/app/store/cart'
-import { CartDrawer } from '../cart/CartDrawer'
+import { CartDrawer } from '../basket/BasketDrawer'
 import { useHydration } from '@/app/hooks/useHydration'
 import { LanguageSwitcher } from './LanguageSwitcher'
 import { Locale, getTranslations } from '@/app/i18n'
