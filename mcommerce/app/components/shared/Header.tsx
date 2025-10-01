@@ -57,15 +57,17 @@ export function Header({ locale }: HeaderProps) {
   ]
 
   const mainLinks = [
+    { href: '#', label: t.footer.about },
+    { href: '#', label: t.footer.contact },
     { href: `/${locale}/products`, label: t.common.products }
   ]
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm">
       <div className="container mx-auto px-4 lg:px-6">
-        <div className="flex h-16 items-center">
+        <div className="flex h-16 items-center justify-between">
           
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center justify-between lg:justify-start space-x-6 w-full lg:w-1/2">
             <Link 
               href={`/${locale}`} 
               className="flex items-center space-x-2 shrink-0 hover:opacity-80 transition-opacity"
@@ -78,13 +80,23 @@ export function Header({ locale }: HeaderProps) {
 
             <nav className="hidden lg:flex items-center space-x-1" role="navigation" aria-label="Ana navigasyon">
               {mainLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground"
-                >
-                  {link.label}
-                </Link>
+                link.href === '#' ? (
+                  <button
+                    key={link.label}
+                    onClick={(e) => e.preventDefault()}
+                    className="px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground cursor-not-allowed opacity-70"
+                  >
+                    {link.label}
+                  </button>
+                ) : (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className="px-4 py-2 text-sm font-medium rounded-md transition-all hover:bg-accent hover:text-accent-foreground"
+                  >
+                    {link.label}
+                  </Link>
+                )
               ))}
               
               <DropdownMenu>
@@ -112,12 +124,125 @@ export function Header({ locale }: HeaderProps) {
                 </DropdownMenuContent>
               </DropdownMenu>
             </nav>
+            
+            <div className="flex items-center space-x-1 lg:hidden">
+              <CartDrawer locale={locale}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="relative hover:bg-accent transition-colors"
+                  aria-label={`Sepet ${displayTotalItems > 0 ? `- ${displayTotalItems} ürün` : '- boş'}`}
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                  {displayTotalItems > 0 && (
+                    <Badge
+                      variant="destructive"
+                      className="absolute -right-1 -top-1 h-5 w-5 p-0 flex items-center justify-center text-xs animate-pulse"
+                    >
+                      {displayTotalItems > 99 ? '99+' : displayTotalItems}
+                    </Badge>
+                  )}
+                </Button>
+              </CartDrawer>
+              
+              <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+                <SheetTrigger asChild>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    aria-label="Menüyü aç"
+                    className="hover:bg-accent transition-colors relative z-10"
+                  >
+                    {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                  </Button>
+                </SheetTrigger>
+              <SheetContent side="right" className="w-[320px] sm:w-[400px] overflow-y-auto px-6">
+                <SheetHeader className="text-left border-b pb-4">
+                  <SheetTitle className="text-lg font-semibold">{t.common.menu}</SheetTitle>
+                </SheetHeader>
+                
+                <div className="mt-6 space-y-6">
+                  <div className="md:hidden">
+                    <form onSubmit={handleSearch}>
+                      <div className="relative">
+                        <Input
+                          type="search"
+                          placeholder={t.common.searchPlaceholder}
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="pl-4 pr-10"
+                          aria-label="Ürün ara"
+                          autoFocus={false}
+                        />
+                        <Button
+                          type="submit"
+                          size="sm"
+                          variant="ghost"
+                          className="absolute right-0 top-0 h-full px-3"
+                          aria-label="Ara"
+                        >
+                          <Search className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </form>
+                  </div>
+
+                  <nav className="space-y-1" role="navigation" aria-label="Mobil navigasyon">
+                    {mainLinks.map((link) => (
+                      link.href === '#' ? (
+                        <button
+                          key={link.label}
+                          onClick={(e) => e.preventDefault()}
+                          className="flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors hover:bg-accent cursor-not-allowed opacity-70 w-full text-left"
+                        >
+                          {link.label}
+                        </button>
+                      ) : (
+                        <Link
+                          key={link.href}
+                          href={link.href}
+                          className="flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors hover:bg-accent"
+                          onClick={() => setIsMenuOpen(false)}
+                        >
+                          {link.label}
+                        </Link>
+                      )
+                    ))}
+                    
+                    <div className="pt-4 border-t">
+                      <p className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                        {locale === 'tr' ? 'Kategoriler' : 'Categories'}
+                      </p>
+                      {categoryLinks.map((link) => {
+                        const IconComponent = link.icon
+                        return (
+                          <Link
+                            key={link.href}
+                            href={link.href}
+                            className="flex items-center space-x-3 px-3 py-3 text-sm font-medium rounded-lg transition-colors hover:bg-accent"
+                            onClick={() => setIsMenuOpen(false)}
+                          >
+                            <IconComponent className="h-5 w-5" />
+                            <span>{link.label}</span>
+                          </Link>
+                        )
+                      })}
+                    </div>
+                  </nav>
+
+                  <div className="sm:hidden pt-4 border-t">
+                    <LanguageSwitcher currentLocale={locale} showText={true} />
+                  </div>
+                </div>
+              </SheetContent>
+              </Sheet>
+            </div>
           </div>
 
-          <div className="flex-1 flex justify-center px-8">
+          <div className="hidden lg:flex items-center justify-end space-x-4 w-full lg:w-1/2">
             <form 
               onSubmit={handleSearch} 
-              className="hidden md:flex w-full max-w-lg"
+              className="hidden md:flex flex-1 max-w-md"
               role="search"
               aria-label="Ürün arama"
             >
@@ -145,112 +270,33 @@ export function Header({ locale }: HeaderProps) {
                 </Button>
               </div>
             </form>
-          </div>
 
-          <div className="flex items-center space-x-2 shrink-0">
-            <div className="hidden sm:block">
-              <LanguageSwitcher currentLocale={locale} />
-            </div>
-            
-            <CartDrawer locale={locale}>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="relative hover:bg-accent transition-colors"
-                aria-label={`Sepet ${displayTotalItems > 0 ? `- ${displayTotalItems} ürün` : '- boş'}`}
-              >
-                <ShoppingCart className="h-5 w-5" />
-                {displayTotalItems > 0 && (
-                  <Badge
-                    variant="destructive"
-                    className="absolute -right-1 -top-1 h-5 w-5 p-0 flex items-center justify-center text-xs animate-pulse"
+            <div className="flex items-center space-x-2 shrink-0">
+              <div className="hidden sm:block">
+                <LanguageSwitcher currentLocale={locale} />
+              </div>
+              
+              <div className="hidden lg:block">
+                <CartDrawer locale={locale}>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative hover:bg-accent transition-colors"
+                    aria-label={`Sepet ${displayTotalItems > 0 ? `- ${displayTotalItems} ürün` : '- boş'}`}
                   >
-                    {displayTotalItems > 99 ? '99+' : displayTotalItems}
-                  </Badge>
-                )}
-              </Button>
-            </CartDrawer>
-
-            <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-              <SheetTrigger asChild className="lg:hidden">
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  aria-label="Menüyü aç"
-                  className="hover:bg-accent transition-colors"
-                >
-                  {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="w-[320px] sm:w-[400px] overflow-y-auto">
-                <SheetHeader className="text-left border-b pb-4">
-                  <SheetTitle className="text-lg font-semibold">{t.common.menu}</SheetTitle>
-                </SheetHeader>
-                
-                <div className="mt-6 space-y-6">
-                  <div className="md:hidden">
-                    <form onSubmit={handleSearch}>
-                      <div className="relative">
-                        <Input
-                          type="search"
-                          placeholder={t.common.searchPlaceholder}
-                          value={searchQuery}
-                          onChange={(e) => setSearchQuery(e.target.value)}
-                          className="pl-4 pr-10"
-                          aria-label="Ürün ara"
-                        />
-                        <Button
-                          type="submit"
-                          size="sm"
-                          variant="ghost"
-                          className="absolute right-0 top-0 h-full px-3"
-                          aria-label="Ara"
-                        >
-                          <Search className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </form>
-                  </div>
-
-                  <nav className="space-y-1" role="navigation" aria-label="Mobil navigasyon">
-                    {mainLinks.map((link) => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        className="flex items-center px-3 py-3 text-sm font-medium rounded-lg transition-colors hover:bg-accent"
-                        onClick={() => setIsMenuOpen(false)}
+                    <ShoppingCart className="h-5 w-5" />
+                    {displayTotalItems > 0 && (
+                      <Badge
+                        variant="destructive"
+                        className="absolute -right-1 -top-1 h-5 w-5 p-0 flex items-center justify-center text-xs animate-pulse"
                       >
-                        {link.label}
-                      </Link>
-                    ))}
-                    
-                    <div className="pt-4 border-t">
-                      <p className="px-3 py-2 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                        {locale === 'tr' ? 'Kategoriler' : 'Categories'}
-                      </p>
-                      {categoryLinks.map((link) => {
-                        const IconComponent = link.icon
-                        return (
-                          <Link
-                            key={link.href}
-                            href={link.href}
-                            className="flex items-center space-x-3 px-3 py-3 text-sm font-medium rounded-lg transition-colors hover:bg-accent"
-                            onClick={() => setIsMenuOpen(false)}
-                          >
-                            <IconComponent className="h-5 w-5" />
-                            <span>{link.label}</span>
-                          </Link>
-                        )
-                      })}
-                    </div>
-                  </nav>
-
-                  <div className="sm:hidden pt-4 border-t">
-                    <LanguageSwitcher currentLocale={locale} />
-                  </div>
-                </div>
-              </SheetContent>
-            </Sheet>
+                        {displayTotalItems > 99 ? '99+' : displayTotalItems}
+                      </Badge>
+                    )}
+                  </Button>
+                </CartDrawer>
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -12,12 +12,13 @@ import { Locale, getTranslations, formatCurrency } from '@/app/i18n'
 export default function CartPage() {
   const params = useParams()
   const locale = params.locale as Locale
-  const { items, totalItems, totalPriceInTRY, updateQuantity, removeItem, clearCart } = useCartStore()
+  const { items, totalItems, totalPrice, totalPriceInTRY, updateQuantity, removeItem, clearCart } = useCartStore()
   const t = getTranslations(locale)
 
+  const currentTotal = locale === 'en' ? totalPrice : totalPriceInTRY
   const shippingThreshold = locale === 'tr' ? 500 : 12 // 500 TRY or $12 USD
-  const shippingCost = totalPriceInTRY > shippingThreshold ? 0 : (locale === 'tr' ? 29.99 : 0.72) // 29.99 TRY or $0.72 USD
-  const finalTotal = totalPriceInTRY + shippingCost
+  const shippingCost = currentTotal > shippingThreshold ? 0 : (locale === 'tr' ? 29.99 : 0.72) // 29.99 TRY or $0.72 USD
+  const finalTotal = currentTotal + shippingCost
 
   if (items.length === 0) {
     return (
@@ -83,9 +84,6 @@ export default function CartPage() {
                   <p className="text-sm text-muted-foreground">
                     {item.product.categoryInfo.name}
                   </p>
-                  <p className="font-semibold">
-                    {formatCurrency(item.product.priceInTRY, locale)}
-                  </p>
                 </div>
 
                 <div className="flex flex-col items-end gap-4">
@@ -111,19 +109,22 @@ export default function CartPage() {
                     </Button>
                   </div>
 
-                  <div className="text-right space-y-2">
-                    <p className="font-semibold">
-                      {formatCurrency(item.product.priceInTRY * item.quantity, locale)}
-                    </p>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => removeItem(item.product.id)}
-                      className="text-muted-foreground hover:text-destructive"
-                    >
-                      <Trash2 className="h-4 w-4 mr-1" />
-                      {t.common.remove}
-                    </Button>
+                  <div className="text-right">
+                    <div className="flex items-center gap-3">
+                      <p className="font-semibold">
+                        {formatCurrency((locale === 'en' ? item.product.price : item.product.priceInTRY) * item.quantity, locale)}
+                      </p>
+                      <div className="w-px h-4 bg-border"></div>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeItem(item.product.id)}
+                        className="text-muted-foreground hover:text-destructive"
+                      >
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        {t.common.remove}
+                      </Button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -148,7 +149,7 @@ export default function CartPage() {
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span>{t.cart.subtotal}:</span>
-                <span>{formatCurrency(totalPriceInTRY, locale)}</span>
+                <span>{formatCurrency(currentTotal, locale)}</span>
               </div>
               <div className="flex justify-between">
                 <span>{t.cart.shipping}:</span>

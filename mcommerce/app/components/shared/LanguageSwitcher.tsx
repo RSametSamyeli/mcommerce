@@ -13,9 +13,10 @@ import { Locale, locales } from '@/app/i18n'
 
 interface LanguageSwitcherProps {
   currentLocale: Locale
+  showText?: boolean
 }
 
-export function LanguageSwitcher({ currentLocale }: LanguageSwitcherProps) {
+export function LanguageSwitcher({ currentLocale, showText = false }: LanguageSwitcherProps) {
   const router = useRouter()
   const pathname = usePathname()
 
@@ -35,8 +36,17 @@ export function LanguageSwitcher({ currentLocale }: LanguageSwitcherProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" className="h-9 w-9">
+        <Button 
+          variant="ghost" 
+          size={showText ? "sm" : "icon"} 
+          className={showText ? "h-9 px-3" : "h-9 w-9"}
+        >
           <Globe className="h-4 w-4" />
+          {showText && (
+            <span className="ml-2 text-sm font-medium">
+              {languages[currentLocale].name}
+            </span>
+          )}
           <span className="sr-only">Switch language</span>
         </Button>
       </DropdownMenuTrigger>
