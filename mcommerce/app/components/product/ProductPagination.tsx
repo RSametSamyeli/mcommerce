@@ -16,6 +16,7 @@ interface ProductPaginationProps {
   totalPages: number
   hasNextPage: boolean
   hasPrevPage: boolean
+  locale: string
 }
 
 export function ProductPagination({
@@ -23,6 +24,7 @@ export function ProductPagination({
   totalPages,
   hasNextPage,
   hasPrevPage,
+  locale,
 }: ProductPaginationProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -30,7 +32,7 @@ export function ProductPagination({
   const createPageURL = (pageNumber: number) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set('page', pageNumber.toString())
-    return `/products?${params.toString()}`
+    return `/${locale}/products?${params.toString()}`
   }
 
   const handlePageChange = (pageNumber: number) => {

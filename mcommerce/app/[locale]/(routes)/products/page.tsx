@@ -156,6 +156,7 @@ export default async function ProductsPage({ params, searchParams }: ProductsPag
               totalPages={productData.totalPages}
               hasNextPage={productData.hasNextPage}
               hasPrevPage={productData.hasPrevPage}
+              locale={locale}
             />
           </nav>
         </section>
