@@ -30,11 +30,11 @@ export function CartDrawer({ children, locale }: CartDrawerProps) {
       <SheetTrigger asChild>
         {children}
       </SheetTrigger>
-      <SheetContent className="w-full sm:max-w-lg">
-        <SheetHeader>
+      <SheetContent className="w-full sm:max-w-lg p-0 flex flex-col">
+        <SheetHeader className="px-6 py-4 border-b">
           <SheetTitle className="flex items-center gap-2">
             <ShoppingCart className="h-5 w-5" />
-            {t.cart.title} ({totalItems} {t.cart.itemsCount.replace('{{count}}', totalItems.toString())})
+            {t.cart.title} ({t.cart.itemsCount.replace('{{count}}', totalItems.toString())})
           </SheetTitle>
         </SheetHeader>
         
@@ -44,12 +44,12 @@ export function CartDrawer({ children, locale }: CartDrawerProps) {
           className="sr-only"
           role="status"
         >
-          {t.cart.title} {totalItems} {t.cart.itemsCount.replace('{{count}}', totalItems.toString())}, {t.cart.total} {formatCurrency(locale === 'en' ? totalPrice : totalPriceInTRY, locale)}
+          {t.cart.title} {t.cart.itemsCount.replace('{{count}}', totalItems.toString())}, {t.cart.total} {formatCurrency(locale === 'en' ? totalPrice : totalPriceInTRY, locale)}
         </div>
 
-        <div className="flex flex-col h-full">
+        <div className="flex flex-col flex-1 overflow-hidden">
           {items.length === 0 ? (
-            <div className="flex-1 flex flex-col items-center justify-center text-center py-8">
+            <div className="flex-1 flex flex-col items-center justify-center text-center py-8 px-6">
               <ShoppingCart className="h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-medium mb-2">{t.cart.empty}</h3>
               <p className="text-muted-foreground mb-4">
@@ -61,20 +61,20 @@ export function CartDrawer({ children, locale }: CartDrawerProps) {
             </div>
           ) : (
             <>
-              <div className="flex-1 overflow-y-auto py-4">
+              <div className="flex-1 overflow-y-auto py-4 px-6">
                 <div className="space-y-4">
                   {items.map((item) => (
-                    <div key={item.id} className="flex items-center gap-3 p-3 border rounded-lg">
+                    <div key={item.id} className="flex items-center gap-4 p-4 bg-background border rounded-lg hover:bg-muted/50 transition-colors">
                       <Link 
                         href={`/${locale}/products/${item.product.slug}`}
                         onClick={() => setIsOpen(false)}
-                        className="relative flex-shrink-0 w-16 h-16 bg-gray-100 rounded-md overflow-hidden"
+                        className="relative flex-shrink-0 w-20 h-20 bg-gray-50 rounded-lg overflow-hidden border"
                       >
                         <Image
                           src={item.product.image}
                           alt={item.product.title}
                           fill
-                          className="object-contain p-1"
+                          className="object-contain p-2"
                           sizes="64px"
                         />
                       </Link>
@@ -83,17 +83,17 @@ export function CartDrawer({ children, locale }: CartDrawerProps) {
                         <Link 
                           href={`/${locale}/products/${item.product.slug}`}
                           onClick={() => setIsOpen(false)}
-                          className="font-medium text-sm hover:text-primary line-clamp-2"
+                          className="font-medium text-sm hover:text-primary line-clamp-2 transition-colors mb-1"
                         >
                           {item.product.title}
                         </Link>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-muted-foreground font-medium">
                           {formatCurrency(locale === 'en' ? item.product.price : item.product.priceInTRY, locale)}
                         </p>
                       </div>
 
                       <div className="flex flex-col items-end gap-2">
-                        <div className="flex items-center border rounded">
+                        <div className="flex items-center border rounded-md bg-background">
                           <Button
                             variant="ghost"
                             size="icon"
@@ -132,7 +132,7 @@ export function CartDrawer({ children, locale }: CartDrawerProps) {
                 </div>
               </div>
 
-              <div className="border-t pt-4 space-y-4">
+              <div className="border-t px-6 py-4 space-y-4 bg-muted/30">
                 <Button
                   variant="outline"
                   size="sm"

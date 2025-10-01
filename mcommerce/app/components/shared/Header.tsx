@@ -71,7 +71,7 @@ export function Header({ locale }: HeaderProps) {
               className="flex items-center space-x-2 shrink-0 hover:opacity-80 transition-opacity"
               aria-label="Ana sayfa"
             >
-              <span className="text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent hidden sm:block">
+              <span className="text-lg sm:text-xl font-bold bg-gradient-to-r from-primary to-primary/80 bg-clip-text text-transparent">
                 M-Commerce
               </span>
             </Link>

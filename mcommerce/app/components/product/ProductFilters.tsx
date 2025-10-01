@@ -43,7 +43,7 @@ const UncontrolledSlider = memo(({
     
     timeoutRef.current = setTimeout(() => {
       onValueCommit(newValue)
-    }, 500)
+    }, 1500)
   }
 
   useEffect(() => {
@@ -120,7 +120,7 @@ export function ProductFilters({ locale }: ProductFiltersProps) {
     
     searchTimeoutRef.current = setTimeout(() => {
       updateURL('search', value)
-    }, 300)
+    }, 800)
   }
 
   const handleCategoryChange = (categorySlug: string, checked: boolean) => {
