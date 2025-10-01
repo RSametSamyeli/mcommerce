@@ -60,71 +60,143 @@ export default function CartPage() {
         <div className="lg:col-span-2 space-y-4">
           {items.map((item) => (
             <Card key={item.id} className="p-4">
-              <div className="flex items-center gap-4">
-                <Link 
-                  href={`/${locale}/products/${item.product.slug}`}
-                  className="relative flex-shrink-0 w-20 h-20 bg-gray-100 rounded-lg overflow-hidden"
-                >
-                  <Image
-                    src={item.product.image}
-                    alt={item.product.title}
-                    fill
-                    className="object-contain p-2"
-                    sizes="80px"
-                  />
-                </Link>
-
-                <div className="flex-1 space-y-2">
+              <div className="space-y-4">
+                <div className="hidden sm:flex items-center gap-4">
                   <Link 
                     href={`/${locale}/products/${item.product.slug}`}
-                    className="font-medium hover:text-primary line-clamp-2"
+                    className="relative flex-shrink-0 w-20 h-20 bg-gray-100 rounded-lg overflow-hidden"
                   >
-                    {item.product.title}
+                    <Image
+                      src={item.product.image}
+                      alt={item.product.title}
+                      fill
+                      className="object-contain p-2"
+                      sizes="80px"
+                    />
                   </Link>
-                  <p className="text-sm text-muted-foreground">
-                    {item.product.categoryInfo.name}
-                  </p>
-                </div>
 
-                <div className="flex flex-col items-end gap-4">
-                  <div className="flex items-center border rounded-lg">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-10 w-10"
-                      onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                  <div className="flex-1 space-y-2">
+                    <Link 
+                      href={`/${locale}/products/${item.product.slug}`}
+                      className="font-medium hover:text-primary line-clamp-2"
                     >
-                      <Minus className="h-4 w-4" />
-                    </Button>
-                    <span className="px-4 py-2 font-medium min-w-[3rem] text-center">
-                      {item.quantity}
-                    </span>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-10 w-10"
-                      onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
-                    >
-                      <Plus className="h-4 w-4" />
-                    </Button>
+                      {item.product.title}
+                    </Link>
+                    <p className="text-sm text-muted-foreground">
+                      {item.product.categoryInfo.name}
+                    </p>
                   </div>
 
-                  <div className="text-right">
-                    <div className="flex items-center gap-3">
-                      <p className="font-semibold">
-                        {formatCurrency((locale === 'en' ? item.product.price : item.product.priceInTRY) * item.quantity, locale)}
-                      </p>
-                      <div className="w-px h-4 bg-border"></div>
+                  <div className="flex flex-col items-end gap-4">
+                    <div className="flex items-center border rounded-lg">
                       <Button
                         variant="ghost"
-                        size="sm"
-                        onClick={() => removeItem(item.product.id)}
-                        className="text-muted-foreground hover:text-destructive"
+                        size="icon"
+                        className="h-10 w-10"
+                        onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
                       >
-                        <Trash2 className="h-4 w-4 mr-1" />
-                        {t.common.remove}
+                        <Minus className="h-4 w-4" />
+                      </Button>
+                      <span className="px-4 py-2 font-medium min-w-[3rem] text-center">
+                        {item.quantity}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-10 w-10"
+                        onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                      >
+                        <Plus className="h-4 w-4" />
                       </Button>
                     </div>
+
+                    <div className="text-right">
+                      <div className="flex items-center gap-3">
+                        <p className="font-semibold">
+                          {formatCurrency((locale === 'en' ? item.product.price : item.product.priceInTRY) * item.quantity, locale)}
+                        </p>
+                        <div className="w-px h-4 bg-border"></div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeItem(item.product.id)}
+                          className="text-muted-foreground hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4 mr-1" />
+                          {t.common.remove}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Mobile layout */}
+                <div className="sm:hidden space-y-3">
+                  <div className="flex items-start gap-3">
+                    <Link 
+                      href={`/${locale}/products/${item.product.slug}`}
+                      className="relative flex-shrink-0 w-16 h-16 bg-gray-100 rounded-lg overflow-hidden"
+                    >
+                      <Image
+                        src={item.product.image}
+                        alt={item.product.title}
+                        fill
+                        className="object-contain p-2"
+                        sizes="64px"
+                      />
+                    </Link>
+
+                    <div className="flex-1 space-y-1">
+                      <Link 
+                        href={`/${locale}/products/${item.product.slug}`}
+                        className="font-medium hover:text-primary line-clamp-2 text-sm"
+                      >
+                        {item.product.title}
+                      </Link>
+                      <p className="text-xs text-muted-foreground">
+                        {item.product.categoryInfo.name}
+                      </p>
+                    </div>
+
+                    <div className="text-right">
+                      <p className="font-semibold text-sm">
+                        {formatCurrency((locale === 'en' ? item.product.price : item.product.priceInTRY) * item.quantity, locale)}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center border rounded">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => updateQuantity(item.product.id, item.quantity - 1)}
+                      >
+                        <Minus className="h-3 w-3" />
+                      </Button>
+                      <span className="px-3 py-1 font-medium text-sm min-w-[2.5rem] text-center">
+                        {item.quantity}
+                      </span>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => updateQuantity(item.product.id, item.quantity + 1)}
+                      >
+                        <Plus className="h-3 w-3" />
+                      </Button>
+                    </div>
+
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeItem(item.product.id)}
+                      className="text-muted-foreground hover:text-destructive text-xs"
+                    >
+                      <Trash2 className="h-3 w-3 mr-1" />
+                      {t.common.remove}
+                    </Button>
                   </div>
                 </div>
               </div>
