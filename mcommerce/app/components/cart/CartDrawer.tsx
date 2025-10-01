@@ -22,7 +22,7 @@ interface CartDrawerProps {
 
 export function CartDrawer({ children, locale }: CartDrawerProps) {
   const [isOpen, setIsOpen] = useState(false)
-  const { items, totalItems, totalPriceInTRY, updateQuantity, removeItem, clearCart } = useCartStore()
+  const { items, totalItems, totalPrice, totalPriceInTRY, updateQuantity, removeItem, clearCart } = useCartStore()
   const t = getTranslations(locale)
 
   return (
@@ -44,7 +44,7 @@ export function CartDrawer({ children, locale }: CartDrawerProps) {
           className="sr-only"
           role="status"
         >
-          {t.cart.title} {totalItems} {t.cart.itemsCount.replace('{{count}}', totalItems.toString())}, {t.cart.total} {formatCurrency(totalPriceInTRY, locale)}
+          {t.cart.title} {totalItems} {t.cart.itemsCount.replace('{{count}}', totalItems.toString())}, {t.cart.total} {formatCurrency(locale === 'en' ? totalPrice : totalPriceInTRY, locale)}
         </div>
 
         <div className="flex flex-col h-full">
@@ -88,7 +88,7 @@ export function CartDrawer({ children, locale }: CartDrawerProps) {
                           {item.product.title}
                         </Link>
                         <p className="text-sm text-muted-foreground">
-                          {formatCurrency(item.product.priceInTRY, locale)}
+                          {formatCurrency(locale === 'en' ? item.product.price : item.product.priceInTRY, locale)}
                         </p>
                       </div>
 
@@ -147,7 +147,7 @@ export function CartDrawer({ children, locale }: CartDrawerProps) {
                 <div className="space-y-2">
                   <div className="flex justify-between text-lg font-semibold">
                     <span>{t.cart.subtotal}:</span>
-                    <span>{formatCurrency(totalPriceInTRY, locale)}</span>
+                    <span>{formatCurrency(locale === 'en' ? totalPrice : totalPriceInTRY, locale)}</span>
                   </div>
                 </div>
 
