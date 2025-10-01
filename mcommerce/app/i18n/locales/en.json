@@ -63,6 +63,7 @@
     "removeFromCart": "remove from cart",
     "quantity": "Quantity",
     "clearCart": "Clear Cart",
+    "quantityUpdated": "Quantity Updated",
     "emptyCartPage": "Your Cart is Empty",
     "emptyCartPageDescription": "You haven't added any products to your cart yet. Browse our products to start shopping.",
     "browseProducts": "Browse Products",
@@ -90,7 +91,9 @@
     "clearFilters": "Clear Filters",
     "addedToCart": "Added to Cart!",
     "addToCartWithQuantity": "Add to Cart ({{quantity}} items)",
-    "featuredProduct": "Featured Product"
+    "featuredProduct": "Featured Product",
+    "addedToCartDescription": "added to your cart",
+    "errorAddingToCart": "Error adding product to cart"
   },
   "footer": {
     "about": "About Us",

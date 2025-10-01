@@ -63,6 +63,7 @@
     "removeFromCart": "ürünü sepetten kaldır",
     "quantity": "Miktar",
     "clearCart": "Sepeti Temizle",
+    "quantityUpdated": "Miktar Güncellendi",
     "emptyCartPage": "Sepetiniz Boş",
     "emptyCartPageDescription": "Henüz sepetinize ürün eklemediniz. Alışverişe başlamak için ürünlerimizi inceleyin.",
     "browseProducts": "Ürünleri İncele",
@@ -90,7 +91,9 @@
     "clearFilters": "Filtreleri Temizle",
     "addedToCart": "Sepete Eklendi!",
     "addToCartWithQuantity": "Sepete Ekle ({{quantity}} adet)",
-    "featuredProduct": "Öne Çıkan Ürün"
+    "featuredProduct": "Öne Çıkan Ürün",
+    "addedToCartDescription": "ürün sepetinize eklendi",
+    "errorAddingToCart": "Ürün sepete eklenirken bir hata oluştu"
   },
   "footer": {
     "about": "Hakkımızda",

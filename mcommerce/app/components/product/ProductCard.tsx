@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge'
 import { useCartStore } from '@/app/store/cart'
 import { useHydration } from '@/app/hooks/useHydration'
 import { Locale, getTranslations, formatCurrency } from '@/app/i18n'
+import { toast } from 'sonner'
 
 interface ProductCardProps {
   product: Product
@@ -39,9 +40,13 @@ const ProductCardComponent = ({ product, locale }: ProductCardProps) => {
     
     try {
       addItem(product, 1)
+      toast.success(`${product.title} - ${t.errors.addedToCart}`, {
+        description: `1 ${t.productDetail.pieces} ${t.errors.addedToCartDescription}`
+      })
       setTimeout(() => setIsAdding(false), 1000)
     } catch (error) {
       console.error('Error adding to cart:', error)
+      toast.error(t.errors.errorAddingToCart)
       setIsAdding(false)
     }
   }

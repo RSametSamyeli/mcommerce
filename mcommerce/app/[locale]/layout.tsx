@@ -5,6 +5,7 @@ import { Header } from '@/app/components/shared/Header'
 import { Footer } from '@/app/components/shared/Footer'
 import { Locale, locales, getTranslations } from '@/app/i18n'
 import { notFound } from 'next/navigation'
+import { Toaster } from 'sonner'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -84,6 +85,16 @@ export default async function LocaleLayout({
           <main className="flex-1">{children}</main>
           <Footer locale={locale as Locale} />
         </div>
+        <Toaster 
+        position='bottom-right'
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: 'var(--background)',
+            color: 'hsl(var(--foreground))',
+            border: '1px solid hsl(var(--border))',
+          }
+        }} />
       </body>
     </html>
   )

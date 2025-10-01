@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge'
 import { useCartStore } from '@/app/store/cart'
 import { Product } from '@/app/types'
 import { Locale, getTranslations } from '@/app/i18n'
+import { toast } from 'sonner'
 
 interface AddToCartButtonProps {
   product: Product
@@ -30,12 +31,19 @@ export function AddToCartButton({ product, stock, isFeatured, locale }: AddToCar
     try {
       if (inCart && cartItem) {
         updateQuantity(product.id, cartItem.quantity + quantity)
+        toast.success(`${product.title} - ${t.cart.quantityUpdated}`, {
+          description: `${t.cart.total}: ${cartItem.quantity + quantity} ${t.productDetail.pieces}`
+        })
       } else {
         addItem(product, quantity)
+        toast.success(`${product.title} - ${t.errors.addedToCart}`, {
+          description: `${quantity} ${t.productDetail.pieces} ${t.errors.addedToCartDescription}`
+        })
       }
       setTimeout(() => setIsAdding(false), 1000)
     } catch (error) {
       console.error('Error adding to cart:', error)
+      toast.error(t.errors.errorAddingToCart)
       setIsAdding(false)
     }
   }
